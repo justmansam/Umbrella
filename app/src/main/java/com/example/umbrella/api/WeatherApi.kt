@@ -9,5 +9,4 @@ interface WeatherApi {
     @GET("/data/2.5/weather?q=Uppsala&appid=7d9c2f60d1047b2aaae0639fdd393995")
     suspend fun getWeather(): Response<WeatherDataItem>
 
-
 }

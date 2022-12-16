@@ -6,6 +6,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,28 +16,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    /*
-    val text1 by remember {
-        mutableStateOf(viewModel.showApiCallResult().toString())
-    }
+    viewModel.showApiCallResult() //Send default place or remember (shared pref) the previous place that user selected
 
-     */
+    val curTemp by viewModel.tempr.collectAsState()
 
-    //viewModel.showApiCallResult()
-    /*
-    Column {
-        Text(text = "Selam Kankito")
-        Spacer(Modifier.size(16.dp))
-        Text(text = text1)
-        //Text(text = viewModel.temp.toString())
-    }
-
-     */
-
-
-    /**
-    LAYOUT BURADA
-     */
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -48,12 +32,17 @@ fun MainScreen(
                 .fillMaxSize()
                 .weight(.48f)
         ) {
-            Row {
-                Column {
-                    Text(text = "-17")
+            Row(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.weight(.5f)) {
+                    //Text(text = "-17")
+                    Text(text = "$curTemp")
                     Text(text = "Uppsala")
                 }
-                Text(text = "TEXT to MOCK image FOR air")
+                Spacer(Modifier.size(4.dp))
+                Text(
+                    modifier = Modifier.weight(.5f),
+                    text = "TEXT to MOCK image FOR air"
+                )
                 //Image(painter = , contentDescription = )
             }
             Text(text = "-14/-17 Feels like -18")
@@ -112,6 +101,4 @@ fun MainScreen(
             }
         }
     }
-
-
 }

@@ -13,6 +13,7 @@ object RetrofitInstance {
             .create(WeatherApi::class.java)
     }
 
+    // Alter. way
     /*
     private val retrofit by lazy {
         Retrofit.Builder()
