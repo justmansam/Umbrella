@@ -22,7 +22,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    viewModel.showApiCallResult("Uppsala") //Send default place or remember (shared pref) the previous place that user selected
+    //Send default place or remember (shared pref) the previous place that user selected
+    viewModel.showApiCallResult("Uppsala")
 
     val curTemp by viewModel.tempr.collectAsState()
 
