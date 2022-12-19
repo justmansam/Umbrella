@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Şemsiye</string>
+    <string name="feels_like">Hissedilen</string>
+    <string name="dawn">Gün doğumu</string>
+    <string name="dusk">Gün batımı</string>
+    <string name="visibility">Görüş</string>
+    <string name="humidity">Nem</string>
+    <string name="wind">Rüzgar</string>
+</resources>

@@ -98,7 +98,10 @@ fun MainScreen(
                     ) {
                         Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
                         Text(text = "Uppsala", fontSize = 32.sp)
-                        Text(text = "Feels like $feelsLikeTemperature\u00B0", fontSize = 16.sp)
+                        Text(
+                            text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
+                            fontSize = 16.sp
+                        )
                         Row {
                             Text(text = "Min $minTemperature\u00B0 / ", fontSize = 16.sp)
                             Text(text = "Max $maxTemperature\u00B0", fontSize = 16.sp)
@@ -120,14 +123,14 @@ fun MainScreen(
                     .weight(.26f)
             ) {
                 Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.Dawn))
+                    Text(text = stringResource(id = R.string.dawn))
                     Text(text = "08:45")
                     Text(text = "TEXT to MOCK image FOR sunrise")
                     //Image(painter = , contentDescription = )
                 }
                 Spacer(Modifier.size(8.dp))
                 Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.Dusk))
+                    Text(text = stringResource(id = R.string.dusk))
                     Text(text = "14:43")
                     Text(text = "TEXT to MOCK image FOR sunset")
                     //Image(painter = , contentDescription = )
@@ -143,7 +146,7 @@ fun MainScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "TEXT to MOCK image FOR visibility")
                     //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.Visibility))
+                    Text(text = stringResource(id = R.string.visibility))
                     Text(text = "$visibility %")
                 }
                 Spacer(Modifier.size(4.dp))
@@ -152,7 +155,7 @@ fun MainScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "TEXT to MOCK image FOR humidity")
                     //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.Humidity))
+                    Text(text = stringResource(id = R.string.humidity))
                     Text(text = "$humidity %")
                 }
                 Spacer(Modifier.size(4.dp))
@@ -161,7 +164,7 @@ fun MainScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "TEXT to MOCK image FOR wind")
                     //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.Wind))
+                    Text(text = stringResource(id = R.string.wind))
                     Text(text = "$wind km/h")
                 }
             }

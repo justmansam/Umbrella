@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Paraply</string>
+    <string name="feels_like">Känns som</string>
+    <string name="dawn">Soluppgång</string>
+    <string name="dusk">Solnedgång</string>
+    <string name="visibility">Synlighet</string>
+    <string name="humidity">Luftfuktighet</string>
+    <string name="wind">Vind</string>
+</resources>
