@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Umbrella</string>
+
+    <string name="Dawn">Sunrise</string>
+    <string name="Dusk">Sunset</string>
+    <string name="Visibility">Visibility</string>
+    <string name="Humidity">Humidity</string>
+    <string name="Wind">Wind</string>
+
 </resources>
