@@ -20,14 +20,28 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun MainScreen(
+    city: String,
+    latitude: String,
+    longitude: String,
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    //Send default place or remember (shared pref) the previous place that user selected
-    viewModel.showApiCallResult("Uppsala")
-
-    val curTemp by viewModel.tempr.collectAsState()
+    val currentTemperature by viewModel.currentTemp.collectAsState()
+    val feelsLikeTemperature by viewModel.feelsLikeTemp.collectAsState()
+    val minTemperature by viewModel.minTemp.collectAsState()
+    val maxTemperature by viewModel.maxTemp.collectAsState()
 
     val context = LocalContext.current
+
+    // First get default shared pref city value first and use it by remember
+    // Then change it with new coordinations and city
+
+
+    if (latitude != "null" && longitude != "null") {
+        viewModel.showApiCallResult(null, latitude, longitude)
+    } else {
+        //Send default place or remember (shared pref) the previous place that user selected
+        viewModel.showApiCallResult(city, null, null)
+    }
 
     Column(
         modifier = Modifier
@@ -49,9 +63,13 @@ fun MainScreen(
                             openLocationSelector(viewModel, context)
                         }
                 ) {
-                    //Text(text = "-17")
-                    Text(text = "$curTemp", fontSize = 32.sp)
+                    Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
                     Text(text = "Uppsala", fontSize = 32.sp)
+                    Text(text = "Feels like $feelsLikeTemperature\u00B0", fontSize = 16.sp)
+                    Row {
+                        Text(text = "Min $minTemperature\u00B0 / ", fontSize = 16.sp)
+                        Text(text = "Max $maxTemperature\u00B0", fontSize = 16.sp)
+                    }
                 }
                 Spacer(Modifier.size(8.dp))
                 Text(
@@ -120,6 +138,6 @@ fun MainScreen(
 
 fun openLocationSelector(viewModel: MainViewModel, context: Context) {
     Log.i("SELAMLARRR", "Ne bilim işte")
-    Toast.makeText(context, "text", Toast.LENGTH_SHORT).show()
-    viewModel.showApiCallResult("Ankara")
+    Toast.makeText(context, "Şehir değiştiniz. Saçmalamayın!", Toast.LENGTH_SHORT).show()
+    viewModel.showApiCallResult("Uppsala", null, null)
 }
