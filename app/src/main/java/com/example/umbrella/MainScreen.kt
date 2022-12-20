@@ -3,6 +3,7 @@ package com.example.umbrella
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -91,12 +92,13 @@ fun MainScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             if (isSearchActive) {
-                Row {
+                Row(modifier = Modifier.fillMaxWidth()) {
                     TextField(
                         value = cityForSearch,
                         onValueChange = { cityForSearch = it },
                         label = { Text("Type city (Stockholm or London,US)") },
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                        maxLines = 1
                     )
                     Button(onClick = {
                         viewModel.searchingActivated()
@@ -105,96 +107,118 @@ fun MainScreen(
 
                     }
                 }
+                Spacer(Modifier.size(16.dp))
             }
-            Column(
+            Card(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
                     .weight(.48f)
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
             ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier
-                            .weight(.5f)
-                            .clickable {
-                                viewModel.searchingActivated()
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize()
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .weight(.5f)
+                                .clickable {
+                                    viewModel.searchingActivated()
+                                }
+                        ) {
+                            Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
+                            Text(text = city, fontSize = 32.sp)
+                            Text(
+                                text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
+                                fontSize = 16.sp
+                            )
+                            Row {
+                                Text(text = "Min $minTemperature\u00B0 / ", fontSize = 16.sp)
+                                Text(text = "Max $maxTemperature\u00B0", fontSize = 16.sp)
                             }
-                    ) {
-                        Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
-                        Text(text = city, fontSize = 32.sp)
-                        Text(
-                            text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
-                            fontSize = 16.sp
-                        )
-                        Row {
-                            Text(text = "Min $minTemperature\u00B0 / ", fontSize = 16.sp)
-                            Text(text = "Max $maxTemperature\u00B0", fontSize = 16.sp)
                         }
+                        Spacer(Modifier.size(8.dp))
+                        Text(
+                            modifier = Modifier.weight(.5f),
+                            text = "TEXT to MOCK image FOR air"
+                        )
+                        //Image(painter = , contentDescription = )
+                    }
+                }
+            }
+            Spacer(Modifier.size(16.dp))
+            Card(
+                modifier = Modifier
+                    .weight(.26f)
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize()
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = "TEXT to MOCK image FOR visibility")
+                        //Image(painter = , contentDescription = )
+                        Text(text = stringResource(id = R.string.visibility))
+                        Text(text = "$visibility %")
+                    }
+                    Spacer(Modifier.size(4.dp))
+                    Divider(Modifier.size(2.dp, 96.dp))
+                    Spacer(Modifier.size(4.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = "TEXT to MOCK image FOR humidity")
+                        //Image(painter = , contentDescription = )
+                        Text(text = stringResource(id = R.string.humidity))
+                        Text(text = "$humidity %")
+                    }
+                    Spacer(Modifier.size(4.dp))
+                    Divider(Modifier.size(2.dp, 96.dp))
+                    Spacer(Modifier.size(4.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = "TEXT to MOCK image FOR wind")
+                        //Image(painter = , contentDescription = )
+                        Text(text = stringResource(id = R.string.wind))
+                        Text(text = "$wind km/h")
+                    }
+                }
+            }
+            Spacer(Modifier.size(16.dp))
+            Card(
+                modifier = Modifier
+                    .weight(.26f)
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize()
+                ) {
+                    Column(modifier = Modifier.weight(.5f)) {
+                        Text(text = stringResource(id = R.string.dawn))
+                        Text(text = sunrise)
+                        Text(text = "TEXT to MOCK image FOR sunrise")
+                        //Image(painter = , contentDescription = )
                     }
                     Spacer(Modifier.size(8.dp))
-                    Text(
-                        modifier = Modifier.weight(.5f),
-                        text = "TEXT to MOCK image FOR air"
-                    )
-                    //Image(painter = , contentDescription = )
+                    Column(modifier = Modifier.weight(.5f)) {
+                        Text(text = stringResource(id = R.string.dusk))
+                        Text(text = sunset)
+                        Text(text = "TEXT to MOCK image FOR sunset")
+                        //Image(painter = , contentDescription = )
+                    }
                 }
             }
             Spacer(Modifier.size(16.dp))
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-                    .weight(.26f)
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "TEXT to MOCK image FOR visibility")
-                    //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.visibility))
-                    Text(text = "$visibility %")
-                }
-                Spacer(Modifier.size(4.dp))
-                Divider(Modifier.size(2.dp, 96.dp))
-                Spacer(Modifier.size(4.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "TEXT to MOCK image FOR humidity")
-                    //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.humidity))
-                    Text(text = "$humidity %")
-                }
-                Spacer(Modifier.size(4.dp))
-                Divider(Modifier.size(2.dp, 96.dp))
-                Spacer(Modifier.size(4.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "TEXT to MOCK image FOR wind")
-                    //Image(painter = , contentDescription = )
-                    Text(text = stringResource(id = R.string.wind))
-                    Text(text = "$wind km/h")
-                }
-            }
-            Spacer(Modifier.size(16.dp))
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-                    .weight(.26f)
-            ) {
-                Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.dawn))
-                    Text(text = sunrise)
-                    Text(text = "TEXT to MOCK image FOR sunrise")
-                    //Image(painter = , contentDescription = )
-                }
-                Spacer(Modifier.size(8.dp))
-                Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.dusk))
-                    Text(text = sunset)
-                    Text(text = "TEXT to MOCK image FOR sunset")
-                    //Image(painter = , contentDescription = )
-                }
-            }
             Text(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxSize()
                     .weight(.07f),
                 text = stringResource(id = R.string.last_update) + " $lastUpdateTime",

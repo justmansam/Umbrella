@@ -108,7 +108,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _lastUpdateTime.value = calculateLocalTime(response, response.body()!!.dt, false)
             } else {
                 // Check for typo for city name you typed!
-                _apiSuccess.value = false
+                _apiSuccess.value = false //BURASI BOZUK
                 searchingActivated()
                 Log.e("TAGGG ", "Check the city name you typed")
             }
