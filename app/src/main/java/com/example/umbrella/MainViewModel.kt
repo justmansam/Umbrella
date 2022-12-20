@@ -22,12 +22,30 @@ class MainViewModel @Inject constructor() : ViewModel() {
     SaveStateHandle ile daha verimli çalışması ve compose free olması (reusable with xml)
      */
     //var tempr: Double by mutableStateOf(0.0) //COMPOSE STATE as an alternative
+    // FROM GENERAL UI STATE MANAGEMENT
     private val _apiSuccess: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val apiSuccess = _apiSuccess.asStateFlow() //STATE FLOW
+    private val _hasLocation: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val hasLocation = _hasLocation.asStateFlow() //STATE FLOW
+    private val _isSearchActive: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchActive = _isSearchActive.asStateFlow()
+    private val _hasSharedPref: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val hasSharedPref = _hasSharedPref.asStateFlow()
+
+    // FROM SEARCH or LOCATION
     private val _city: MutableStateFlow<String> = MutableStateFlow("")
-    val city = _city.asStateFlow() //STATE FLOW
+    val city = _city.asStateFlow()
+
+    /*
+    private val _latitude: MutableStateFlow<String> = MutableStateFlow("")
+    val latitude = _latitude.asStateFlow()
+    private val _longitude: MutableStateFlow<String> = MutableStateFlow("")
+    val longitude = _longitude.asStateFlow()
+
+     */
+    // FROM API RESPONSE
     private val _currentTemp: MutableStateFlow<Int> = MutableStateFlow(0)
-    val currentTemp = _currentTemp.asStateFlow() //STATE FLOW
+    val currentTemp = _currentTemp.asStateFlow()
     private val _feelsLikeTemp: MutableStateFlow<Int> = MutableStateFlow(0)
     val feelsLikeTemp = _feelsLikeTemp.asStateFlow()
     private val _minTemp: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -52,6 +70,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             val response = try {
                 if (latitude != null && longitude != null) {
+                    _hasLocation.value = true
                     RetrofitInstance.api.getWeatherByCoordination(
                         latitude,
                         longitude,
@@ -90,6 +109,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             } else {
                 // Check for typo for city name you typed!
                 _apiSuccess.value = false
+                searchingActivated()
                 Log.e("TAGGG ", "Check the city name you typed")
             }
         }
@@ -118,6 +138,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
             val dateString = dateAndTimeStringList[0] + " " + hourString
             dateString
         }
+    }
+
+    fun searchingActivated() {
+        _isSearchActive.value = _isSearchActive.value != true
     }
 
     companion object {

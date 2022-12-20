@@ -19,28 +19,28 @@ import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-private lateinit var fusedLocationClient: FusedLocationProviderClient
-
 /*
 HERŞEYDEN ÖNCE İNTERNETİ KONTROL ET!!!
 INTERNET YOKSA ÖNCE SHARED PREF AL!!!
 SHARED VAR DİYİP STATE OLUŞTUR BÖYLECE APİ SUCCESS OLMAZSA SHARED STATE CHECK EDİLİP GÖSTERİLİR!
  */
 
-open class MainActivity : ComponentActivity() {
+private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkConnection()
+        checkPermissionAndGetLocation()
+    }
 
+    private fun checkConnection() {
         val connectivityManager =
             ContextCompat.getSystemService(this, ConnectivityManager::class.java)
         val currentNetwork = connectivityManager?.activeNetwork
-        if (currentNetwork != null) {
-            checkPermissionAndGetLocation()
-        } else {
+        if (currentNetwork == null) {
             Toast.makeText(this, "No network connection!", Toast.LENGTH_SHORT).show()
-            checkPermissionAndGetLocation()
         }
-        // ÖNCE INTERNET PEŞİNE SHARED PREF VARSA ONU GÖSTER MİLLETİ BEKLETME
     }
 
     private fun checkPermissionAndGetLocation() {
@@ -86,7 +86,7 @@ open class MainActivity : ComponentActivity() {
                         // No location access granted.
                         Toast.makeText(this, "Oooo vermedin demek!", Toast.LENGTH_SHORT).show()
                         setScreenContent(
-                            "Ankara", "null", "null"
+                            "null", "null", "null"
                         )
                     }
                 }

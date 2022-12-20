@@ -1,33 +1,31 @@
 package com.example.umbrella
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun MainScreen(
-    city1: String,
-    latitude: String,
-    longitude: String,
+    cityFromMain: String,
+    latitudeFromMain: String,
+    longitudeFromMain: String,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val apiSuccess by viewModel.apiSuccess.collectAsState()
+    val hasLocation by viewModel.hasLocation.collectAsState()
+    val isSearchActive by viewModel.isSearchActive.collectAsState()
+    val hasSharedPref by viewModel.hasSharedPref.collectAsState()
     val city by viewModel.city.collectAsState()
     val currentTemperature by viewModel.currentTemp.collectAsState()
     val feelsLikeTemperature by viewModel.feelsLikeTemp.collectAsState()
@@ -40,16 +38,23 @@ fun MainScreen(
     val sunset by viewModel.sunset.collectAsState()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
 
-    val context = LocalContext.current
+    var cityForSearch by remember {
+        mutableStateOf("")
+    }
+    //val context = LocalContext.current
 
     // First get default shared pref city value first and use it by remember
     // Then change it with new coordinations and city
 
-    if (latitude != "null" && longitude != "null") {
-        viewModel.showApiCallResult(null, latitude, longitude)
-    } else {
-        //Send default place or remember (shared pref) the previous place that user selected
-        viewModel.showApiCallResult(city1, null, null)
+    if (!hasLocation) {
+        if (latitudeFromMain != "null" && longitudeFromMain != "null") {
+            viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
+        } else if (cityFromMain != "null") {
+            //Send default place or remember (shared pref) the previous place that user selected
+            viewModel.showApiCallResult(cityFromMain, null, null)
+        } else {
+            viewModel.searchingActivated()
+        }
     }
 
     if (!apiSuccess) {
@@ -85,6 +90,22 @@ fun MainScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            if (isSearchActive) {
+                Row {
+                    TextField(
+                        value = cityForSearch,
+                        onValueChange = { cityForSearch = it },
+                        label = { Text("Type city (Stockholm or London,US)") },
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                    )
+                    Button(onClick = {
+                        viewModel.searchingActivated()
+                        viewModel.showApiCallResult(cityForSearch, null, null)
+                    }) {
+
+                    }
+                }
+            }
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -96,7 +117,7 @@ fun MainScreen(
                         modifier = Modifier
                             .weight(.5f)
                             .clickable {
-                                changeLocation(viewModel, context)
+                                viewModel.searchingActivated()
                             }
                     ) {
                         Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
@@ -181,10 +202,4 @@ fun MainScreen(
             )
         }
     }
-}
-
-fun changeLocation(viewModel: MainViewModel, context: Context) {
-    Toast.makeText(context, "Şehir değiştiniz. Saçmalamayın!", Toast.LENGTH_SHORT).show()
-
-    viewModel.showApiCallResult("Ankara", null, null)
 }
