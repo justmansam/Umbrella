@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.api.RetrofitInstance
+import com.example.umbrella.api.WeatherDataItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
 
@@ -38,6 +40,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val humidity = _humidity.asStateFlow()
     private val _wind: MutableStateFlow<Int> = MutableStateFlow(0)
     val wind = _wind.asStateFlow()
+    private val _sunrise: MutableStateFlow<String> = MutableStateFlow("")
+    val sunrise = _sunrise.asStateFlow()
+    private val _sunset: MutableStateFlow<String> = MutableStateFlow("")
+    val sunset = _sunset.asStateFlow()
+    private val _lastUpdateTime: MutableStateFlow<String> = MutableStateFlow("")
+    val lastUpdateTime = _lastUpdateTime.asStateFlow()
 
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
         //var temp: Double? = null
@@ -67,9 +75,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 return@launch
             }
             if (response.isSuccessful) {
-                Log.i("RESPONSE ", response.body()!!.main.temp.toString())
-
                 _apiSuccess.value = true
+                _city.value = response.body()!!.name
                 _currentTemp.value = response.body()!!.main.temp.toInt()
                 _feelsLikeTemp.value = response.body()!!.main.feels_like.toInt()
                 _minTemp.value = response.body()!!.main.temp_min.toInt()
@@ -77,12 +84,39 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _visibility.value = response.body()!!.visibility / 100
                 _humidity.value = response.body()!!.main.humidity
                 _wind.value = response.body()!!.wind.speed.toInt()
-
-                Log.i("RESPONSE2 ", currentTemp.value.toString())
+                _sunrise.value = calculateLocalTime(response, response.body()!!.sys.sunrise, true)
+                _sunset.value = calculateLocalTime(response, response.body()!!.sys.sunset, true)
+                _lastUpdateTime.value = calculateLocalTime(response, response.body()!!.dt, false)
             } else {
+                // Check for typo for city name you typed!
                 _apiSuccess.value = false
                 Log.e("TAGGG ", "Check the city name you typed")
             }
+        }
+    }
+
+    private fun calculateLocalTime(
+        response: Response<WeatherDataItem>,
+        dateAndTimeInUnix: Int,
+        returnOnlyHour: Boolean
+    ): String {
+        val timeZone = response.body()!!.timezone
+        val timeDifference = timeZone / 3600
+        val dateAndTimeRaw = java.time.format.DateTimeFormatter.ISO_INSTANT
+            .format(java.time.Instant.ofEpochSecond(dateAndTimeInUnix.toLong()))
+        val dateAndTimeStringList = dateAndTimeRaw.split("T")
+        val hourAndMinuteStringList = dateAndTimeStringList[1].split(":").dropLast(1)
+        val hour = hourAndMinuteStringList[0].toInt() + timeDifference
+        val hourString = if (hour < 10) {
+            "0"
+        } else {
+            ""
+        } + hour.toString() + ":" + hourAndMinuteStringList[1]
+        return if (returnOnlyHour) {
+            hourString
+        } else {
+            val dateString = dateAndTimeStringList[0] + " " + hourString
+            dateString
         }
     }
 

@@ -6,4 +6,5 @@
     <string name="visibility">Visibility</string>
     <string name="humidity">Humidity</string>
     <string name="wind">Wind</string>
+    <string name="last_update">Last updated</string>
 </resources>

@@ -7,4 +7,5 @@
     <string name="visibility">Görüş</string>
     <string name="humidity">Nem</string>
     <string name="wind">Rüzgar</string>
+    <string name="last_update">Son güncelleme</string>
 </resources>

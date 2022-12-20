@@ -12,18 +12,4 @@ object RetrofitInstance {
             .build()
             .create(WeatherApi::class.java)
     }
-
-    // Alter. way
-    /*
-    private val retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-    val api: WeatherApi by lazy {
-        retrofit.create(WeatherApi::class.java)
-    }
-
-     */
 }

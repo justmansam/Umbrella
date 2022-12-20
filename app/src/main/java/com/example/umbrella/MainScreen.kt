@@ -36,6 +36,9 @@ fun MainScreen(
     val visibility by viewModel.visibility.collectAsState()
     val humidity by viewModel.humidity.collectAsState()
     val wind by viewModel.wind.collectAsState()
+    val sunrise by viewModel.sunrise.collectAsState()
+    val sunset by viewModel.sunset.collectAsState()
+    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
 
     val context = LocalContext.current
 
@@ -97,7 +100,7 @@ fun MainScreen(
                             }
                     ) {
                         Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
-                        Text(text = "Uppsala", fontSize = 32.sp)
+                        Text(text = city, fontSize = 32.sp)
                         Text(
                             text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
                             fontSize = 16.sp
@@ -112,27 +115,6 @@ fun MainScreen(
                         modifier = Modifier.weight(.5f),
                         text = "TEXT to MOCK image FOR air"
                     )
-                    //Image(painter = , contentDescription = )
-                }
-            }
-            Spacer(Modifier.size(16.dp))
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-                    .weight(.26f)
-            ) {
-                Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.dawn))
-                    Text(text = "08:45")
-                    Text(text = "TEXT to MOCK image FOR sunrise")
-                    //Image(painter = , contentDescription = )
-                }
-                Spacer(Modifier.size(8.dp))
-                Column(modifier = Modifier.weight(.5f)) {
-                    Text(text = stringResource(id = R.string.dusk))
-                    Text(text = "14:43")
-                    Text(text = "TEXT to MOCK image FOR sunset")
                     //Image(painter = , contentDescription = )
                 }
             }
@@ -168,6 +150,35 @@ fun MainScreen(
                     Text(text = "$wind km/h")
                 }
             }
+            Spacer(Modifier.size(16.dp))
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+                    .weight(.26f)
+            ) {
+                Column(modifier = Modifier.weight(.5f)) {
+                    Text(text = stringResource(id = R.string.dawn))
+                    Text(text = sunrise)
+                    Text(text = "TEXT to MOCK image FOR sunrise")
+                    //Image(painter = , contentDescription = )
+                }
+                Spacer(Modifier.size(8.dp))
+                Column(modifier = Modifier.weight(.5f)) {
+                    Text(text = stringResource(id = R.string.dusk))
+                    Text(text = sunset)
+                    Text(text = "TEXT to MOCK image FOR sunset")
+                    //Image(painter = , contentDescription = )
+                }
+            }
+            Text(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+                    .weight(.07f),
+                text = stringResource(id = R.string.last_update) + " $lastUpdateTime",
+                fontSize = 10.sp
+            )
         }
     }
 }
