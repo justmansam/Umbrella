@@ -23,8 +23,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
      */
     //var tempr: Double by mutableStateOf(0.0) //COMPOSE STATE as an alternative
     // FOR GENERAL UI STATE MANAGEMENT
-    private val _apiSuccess: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val apiSuccess = _apiSuccess.asStateFlow() //STATE FLOW
+    private val _apiHasResponse: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val apiHasResponse = _apiHasResponse.asStateFlow() //STATE FLOW
     private val _hasLocation: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val hasLocation = _hasLocation.asStateFlow() //STATE FLOW
     private val _isSearchActive: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -68,6 +68,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val lastUpdateTime = _lastUpdateTime.asStateFlow()
 
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
+        _hasLocation.value = false
+        _hasSharedPref.value = false
         viewModelScope.launch {
             val response = try {
                 if (latitude != null && longitude != null && latitude != "null" && longitude != "null") {
@@ -78,29 +80,36 @@ class MainViewModel @Inject constructor() : ViewModel() {
                         API_KEY
                     )
                 } else {
-                    RetrofitInstance.api.getWeatherByCity(
-                        city!!,
-                        API_KEY
-                    )
+                    if (city != null) {
+                        RetrofitInstance.api.getWeatherByCity(
+                            city,
+                            API_KEY
+                        )
+                    } else {
+                        RetrofitInstance.api.getWeatherByCity(
+                            "",
+                            API_KEY
+                        )
+                    }
                 }
             } catch (e: IOException) {
                 // CHECK INTERNET
                 Log.e("TAGGG ", "IOExeption, check your connection")
-                _apiSuccess.value = false
+                _apiHasResponse.value = false
                 return@launch
             } catch (e: HttpException) {
                 Log.e("TAGGG ", "HttpException, unexpected response")
-                _apiSuccess.value = false
+                _apiHasResponse.value = false
                 return@launch
             }
             if (response.isSuccessful) {
-                getResponses(response)
-                _apiSuccess.value = true
+                _apiHasResponse.value = true
                 _isSearchActive.value = false
                 _isSearchFailed.value = false
+                getResponses(response)
             } else {
                 // Check for typo for city name you typed!
-                _apiSuccess.value = false
+                _apiHasResponse.value = false
                 _isSearchActive.value = true
                 _isSearchFailed.value = true
                 Log.e("TAGGG ", "Check the city name you typed")
@@ -151,17 +160,63 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private fun updateSharedPreferences() {
         viewModelScope.launch {
             sharedPrefImpl.setValue(citySP, city.value)
-            Log.e("BİBAKHELECANIMINİÇİ ", "BİŞE")
+            sharedPrefImpl.setValue(currentTempSP, currentTemp.value.toString())
+            sharedPrefImpl.setValue(feelsLikeTempSP, feelsLikeTemp.value.toString())
+            sharedPrefImpl.setValue(minTempSP, minTemp.value.toString())
+            sharedPrefImpl.setValue(maxTempSP, maxTemp.value.toString())
+            sharedPrefImpl.setValue(visibilitySP, visibility.value.toString())
+            sharedPrefImpl.setValue(humiditySP, humidity.value.toString())
+            sharedPrefImpl.setValue(windSP, wind.value.toString())
+            sharedPrefImpl.setValue(sunriseSP, sunrise.value)
+            sharedPrefImpl.setValue(sunsetSP, sunset.value)
+            sharedPrefImpl.setValue(lastUpdateTimeSP, lastUpdateTime.value)
         }
+        _hasSharedPref.value = true
     }
 
     fun searchActivated() {
         _isSearchActive.value = _isSearchActive.value != true
     }
 
+    fun exposeLocalData(
+        cityFromMain: String?,
+        currentTempFromMain: String?,
+        feelsLikeTempFromMain: String?,
+        minTempFromMain: String?,
+        maxTempFromMain: String?,
+        visibilityFromMain: String?,
+        humidityFromMain: String?,
+        windFromMain: String?,
+        sunriseFromMain: String?,
+        sunsetFromMain: String?,
+        lastUpdateTimeFromMain: String?
+    ) {
+        _city.value = cityFromMain!!
+        _currentTemp.value = currentTempFromMain!!.toInt()
+        _feelsLikeTemp.value = feelsLikeTempFromMain!!.toInt()
+        _minTemp.value = minTempFromMain!!.toInt()
+        _maxTemp.value = maxTempFromMain!!.toInt()
+        _visibility.value = visibilityFromMain!!.toInt()
+        _humidity.value = humidityFromMain!!.toInt()
+        _wind.value = windFromMain!!.toInt()
+        _sunrise.value = sunriseFromMain!!
+        _sunset.value = sunsetFromMain!!
+        _lastUpdateTime.value = lastUpdateTimeFromMain!!
+        _hasSharedPref.value = true
+    }
+
     companion object {
         private const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
-        const val PREF_FILE_KEY = "com.example.myapp.PREFERENCE_FILE_KEY"
         const val citySP = "city"
+        const val currentTempSP = "currentTemp"
+        const val feelsLikeTempSP = "feelsLikeTemp"
+        const val minTempSP = "minTemp"
+        const val maxTempSP = "maxTemp"
+        const val visibilitySP = "visibility"
+        const val humiditySP = "humidity"
+        const val windSP = "wind"
+        const val sunriseSP = "sunrise"
+        const val sunsetSP = "sunset"
+        const val lastUpdateTimeSP = "lastUpdateTime"
     }
 }

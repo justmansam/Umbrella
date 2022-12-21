@@ -19,6 +19,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.umbrella.MainViewModel.Companion.citySP
+import com.example.umbrella.MainViewModel.Companion.currentTempSP
+import com.example.umbrella.MainViewModel.Companion.feelsLikeTempSP
+import com.example.umbrella.MainViewModel.Companion.humiditySP
+import com.example.umbrella.MainViewModel.Companion.lastUpdateTimeSP
+import com.example.umbrella.MainViewModel.Companion.maxTempSP
+import com.example.umbrella.MainViewModel.Companion.minTempSP
+import com.example.umbrella.MainViewModel.Companion.sunriseSP
+import com.example.umbrella.MainViewModel.Companion.sunsetSP
+import com.example.umbrella.MainViewModel.Companion.visibilitySP
+import com.example.umbrella.MainViewModel.Companion.windSP
 import com.example.umbrella.pref.SharedPreferencesImpl
 import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -37,9 +47,11 @@ lateinit var sharedPrefImpl: SharedPreferencesImpl
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
+
         lifecycleScope.launchWhenCreated {
-            lookForSharedPref(sharedPref)
             checkConnection()
         }
         checkPermissionAndGetLocation()
@@ -74,34 +86,31 @@ class MainActivity : ComponentActivity() {
                         fusedLocationClient.lastLocation
                             .addOnSuccessListener { location: Location? ->
                                 // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    setScreenContent(
+                                        latitude = location.latitude.toString(),
+                                        longitude = location.longitude.toString()
+                                    )
+                                }
                                 Toast.makeText(
                                     this,
                                     "Last location alındı!: $location",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                setScreenContent(
-                                    "null",
-                                    location?.latitude.toString(),
-                                    location?.longitude.toString()
-                                )
                             }
                             .addOnFailureListener {
+                                lookForSharedPref()
                                 Toast.makeText(
                                     this,
                                     "Last location alınamadı!: $it",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                lookForSharedPref(sharedPref)
-                                setScreenContent("null", "null", "null")
                             }
                     }
                     else -> {
                         // No location access granted.
+                        lookForSharedPref()
                         Toast.makeText(this, "Oooo vermedin demek!", Toast.LENGTH_SHORT).show()
-                        lookForSharedPref(sharedPref)
-                        setScreenContent(
-                            "null", "null", "null"
-                        )
                     }
                 }
             }.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
@@ -110,30 +119,88 @@ class MainActivity : ComponentActivity() {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        setScreenContent(
+                            latitude = location.latitude.toString(),
+                            longitude = location.longitude.toString()
+                        )
+                    }
                     Toast.makeText(this, "Last location alındı!: $location", Toast.LENGTH_SHORT)
                         .show()
-                    setScreenContent(
-                        "null", location?.latitude.toString(), location?.longitude.toString()
-                    )
                 }
         }
     }
 
-    private fun lookForSharedPref(sharedPref: SharedPreferences) {
-        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
+    private fun lookForSharedPref() {
         val storedCity = sharedPrefImpl.getValue(citySP)
-        Toast.makeText(this, "ŞEHRE GELLL!: $storedCity", Toast.LENGTH_SHORT)
-            .show()
+        val storedCurrentTemp = sharedPrefImpl.getValue(currentTempSP)
+        val storedFeelsLikeTemp = sharedPrefImpl.getValue(feelsLikeTempSP)
+        val storedMinTemp = sharedPrefImpl.getValue(minTempSP)
+        val storedMaxTemp = sharedPrefImpl.getValue(maxTempSP)
+        val storedVisibility = sharedPrefImpl.getValue(visibilitySP)
+        val storedHumidity = sharedPrefImpl.getValue(humiditySP)
+        val storedWind = sharedPrefImpl.getValue(windSP)
+        val storedSunrise = sharedPrefImpl.getValue(sunriseSP)
+        val storedSunset = sharedPrefImpl.getValue(sunsetSP)
+        val storedLastUpdateTime = sharedPrefImpl.getValue(lastUpdateTimeSP)
+
+        if (storedCity != null && storedCurrentTemp != null && storedLastUpdateTime != null) {
+            setScreenContent(
+                storedCity,
+                null,
+                null,
+                storedCurrentTemp,
+                storedFeelsLikeTemp,
+                storedMinTemp,
+                storedMaxTemp,
+                storedVisibility,
+                storedHumidity,
+                storedWind,
+                storedSunrise,
+                storedSunset,
+                storedLastUpdateTime
+            )
+        } else {
+            setScreenContent()
+        }
     }
 
-    private fun setScreenContent(city: String, latitude: String, longitude: String) {
+    private fun setScreenContent(
+        city: String? = null,
+        latitude: String? = null,
+        longitude: String? = null,
+        currentTemp: String? = null,
+        feelsLikeTemp: String? = null,
+        minTemp: String? = null,
+        maxTemp: String? = null,
+        visibility: String? = null,
+        humidity: String? = null,
+        wind: String? = null,
+        sunrise: String? = null,
+        sunset: String? = null,
+        lastUpdateTime: String? = null
+    ) {
         setContent {
             UmbrellaTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MainScreen(city, latitude, longitude)
+                    MainScreen(
+                        city,
+                        latitude,
+                        longitude,
+                        currentTemp,
+                        feelsLikeTemp,
+                        minTemp,
+                        maxTemp,
+                        visibility,
+                        humidity,
+                        wind,
+                        sunrise,
+                        sunset,
+                        lastUpdateTime
+                    )
                 }
             }
         }

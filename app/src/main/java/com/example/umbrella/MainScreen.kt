@@ -18,12 +18,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun MainScreen(
-    cityFromMain: String,
-    latitudeFromMain: String,
-    longitudeFromMain: String,
+    cityFromMain: String?,
+    latitudeFromMain: String?,
+    longitudeFromMain: String?,
+    currentTempFromMain: String?,
+    feelsLikeTempFromMain: String?,
+    minTempFromMain: String?,
+    maxTempFromMain: String?,
+    visibilityFromMain: String?,
+    humidityFromMain: String?,
+    windFromMain: String?,
+    sunriseFromMain: String?,
+    sunsetFromMain: String?,
+    lastUpdateTimeFromMain: String?,
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    val apiSuccess by viewModel.apiSuccess.collectAsState()
+    val apiHasResponse by viewModel.apiHasResponse.collectAsState()
     val hasLocation by viewModel.hasLocation.collectAsState()
     val isSearchActive by viewModel.isSearchActive.collectAsState()
     val isSearchFailed by viewModel.isSearchFailed.collectAsState()
@@ -42,26 +52,32 @@ fun MainScreen(
     val sunset by viewModel.sunset.collectAsState()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
 
-    var cityForSearch by remember {
-        mutableStateOf("")
+    if (!hasSharedPref && cityFromMain != null && currentTempFromMain != null && lastUpdateTimeFromMain != null) {
+        viewModel.exposeLocalData(
+            cityFromMain,
+            currentTempFromMain,
+            feelsLikeTempFromMain,
+            minTempFromMain,
+            maxTempFromMain,
+            visibilityFromMain,
+            humidityFromMain,
+            windFromMain,
+            sunriseFromMain,
+            sunsetFromMain,
+            lastUpdateTimeFromMain
+        )
     }
-    //val context = LocalContext.current
 
-    // First get default shared pref city value first and use it by remember
-    // Then change it with new coordinations and city
-
-    if (!hasLocation) {
-        if (latitudeFromMain != "null" && longitudeFromMain != "null") {
+    if (!apiHasResponse) {
+        if (latitudeFromMain != null && longitudeFromMain != null) {
             viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
-        } else if (cityFromMain != "null") {
+        } else {
             //Send default place or remember (shared pref) the previous place that user selected
             viewModel.showApiCallResult(cityFromMain, null, null)
-        } else {
-            viewModel.searchActivated()
         }
     }
 
-    if (!hasLocation) { //SIKINTILI IZIN VERMEYINCE ÇALIŞMIYOR
+    if (!hasLocation && !hasSharedPref && !isSearchActive) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -95,6 +111,9 @@ fun MainScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             if (isSearchActive) {
+                var cityForSearch by remember {
+                    mutableStateOf("")
+                }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     TextField(
                         value = cityForSearch,
