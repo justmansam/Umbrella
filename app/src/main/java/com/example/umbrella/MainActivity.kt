@@ -18,18 +18,19 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.umbrella.MainViewModel.Companion.citySP
-import com.example.umbrella.MainViewModel.Companion.currentTempSP
-import com.example.umbrella.MainViewModel.Companion.feelsLikeTempSP
-import com.example.umbrella.MainViewModel.Companion.humiditySP
-import com.example.umbrella.MainViewModel.Companion.lastUpdateTimeSP
-import com.example.umbrella.MainViewModel.Companion.maxTempSP
-import com.example.umbrella.MainViewModel.Companion.minTempSP
-import com.example.umbrella.MainViewModel.Companion.sunriseSP
-import com.example.umbrella.MainViewModel.Companion.sunsetSP
-import com.example.umbrella.MainViewModel.Companion.visibilitySP
-import com.example.umbrella.MainViewModel.Companion.windSP
 import com.example.umbrella.pref.SharedPreferencesImpl
+import com.example.umbrella.ui.MainScreen
+import com.example.umbrella.ui.MainViewModel.Companion.citySP
+import com.example.umbrella.ui.MainViewModel.Companion.currentTempSP
+import com.example.umbrella.ui.MainViewModel.Companion.feelsLikeTempSP
+import com.example.umbrella.ui.MainViewModel.Companion.humiditySP
+import com.example.umbrella.ui.MainViewModel.Companion.lastUpdateTimeSP
+import com.example.umbrella.ui.MainViewModel.Companion.maxTempSP
+import com.example.umbrella.ui.MainViewModel.Companion.minTempSP
+import com.example.umbrella.ui.MainViewModel.Companion.sunriseSP
+import com.example.umbrella.ui.MainViewModel.Companion.sunsetSP
+import com.example.umbrella.ui.MainViewModel.Companion.visibilitySP
+import com.example.umbrella.ui.MainViewModel.Companion.windSP
 import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
             ContextCompat.getSystemService(this, ConnectivityManager::class.java)
         val currentNetwork = connectivityManager?.activeNetwork
         if (currentNetwork == null) {
-            Toast.makeText(this, "No network connection!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show()
         }
     }
 

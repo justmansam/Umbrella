@@ -1,20 +1,27 @@
-package com.example.umbrella
+package com.example.umbrella.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.umbrella.R
 
 @Composable
 fun MainScreen(
@@ -114,25 +121,27 @@ fun MainScreen(
                 var cityForSearch by remember {
                     mutableStateOf("")
                 }
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    TextField(
-                        value = cityForSearch,
-                        onValueChange = { cityForSearch = it },
-                        label = { Text("Type city (Stockholm or London,US)") },
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                        maxLines = 1
-                    )
-                    Button(onClick = {
-                        //viewModel.searchActivated()
-                        viewModel.showApiCallResult(cityForSearch, null, null)
-                    }) {}
-                }
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = cityForSearch,
+                    onValueChange = { cityForSearch = it },
+                    label = { Text(stringResource(id = R.string.type_city)) },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = { viewModel.showApiCallResult(cityForSearch, null, null) }
+                    ),
+                    maxLines = 1
+                )
                 Spacer(Modifier.size(16.dp))
             }
             Card(
                 modifier = Modifier
                     .weight(.48f)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .clickable { viewModel.searchActivated() },
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
@@ -141,31 +150,49 @@ fun MainScreen(
                         .padding(16.dp)
                         .fillMaxSize()
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
-                                .weight(.5f)
-                                .clickable {
-                                    viewModel.searchActivated()
-                                }
+                                .weight(.6f)
+                                .align(CenterVertically),
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
-                            Text(text = city, fontSize = 32.sp)
+                            Text(
+                                text = "$currentTemperature\u00B0",
+                                fontSize = 84.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = city,
+                                fontSize = 32.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(Modifier.size(4.dp))
                             Text(
                                 text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
-                                fontSize = 16.sp
+                                fontSize = 16.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
                             )
-                            Row {
-                                Text(text = "Min $minTemperature\u00B0 / ", fontSize = 16.sp)
-                                Text(text = "Max $maxTemperature\u00B0", fontSize = 16.sp)
-                            }
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "Min $minTemperature\u00B0 / Max $maxTemperature°",
+                                fontSize = 16.sp,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                         }
                         Spacer(Modifier.size(8.dp))
-                        Text(
-                            modifier = Modifier.weight(.5f),
-                            text = "TEXT to MOCK image FOR air"
+                        Image(
+                            modifier = Modifier
+                                .weight(.4f)
+                                .size(156.dp)
+                                .padding(top = 8.dp),
+                            painter = painterResource(id = R.drawable.defaultw),
+                            contentDescription = ""
                         )
-                        //Image(painter = , contentDescription = )
                     }
                 }
             }
@@ -182,25 +209,45 @@ fun MainScreen(
                         .padding(16.dp)
                         .fillMaxSize()
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(CenterVertically)
+                    ) {
                         Text(text = "TEXT to MOCK image FOR visibility")
                         //Image(painter = , contentDescription = )
                         Text(text = stringResource(id = R.string.visibility))
                         Text(text = "$visibility %")
                     }
                     Spacer(Modifier.size(4.dp))
-                    Divider(Modifier.size(2.dp, 96.dp))
+                    Divider(
+                        Modifier
+                            .size(2.dp, 96.dp)
+                            .align(CenterVertically)
+                    )
                     Spacer(Modifier.size(4.dp))
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(CenterVertically)
+                    ) {
                         Text(text = "TEXT to MOCK image FOR humidity")
                         //Image(painter = , contentDescription = )
                         Text(text = stringResource(id = R.string.humidity))
                         Text(text = "$humidity %")
                     }
                     Spacer(Modifier.size(4.dp))
-                    Divider(Modifier.size(2.dp, 96.dp))
+                    Divider(
+                        Modifier
+                            .size(2.dp, 96.dp)
+                            .align(CenterVertically)
+                    )
                     Spacer(Modifier.size(4.dp))
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(CenterVertically)
+                    ) {
                         Text(text = "TEXT to MOCK image FOR wind")
                         //Image(painter = , contentDescription = )
                         Text(text = stringResource(id = R.string.wind))
@@ -220,19 +267,54 @@ fun MainScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxSize()
+                        .align(CenterHorizontally)
                 ) {
-                    Column(modifier = Modifier.weight(.5f)) {
-                        Text(text = stringResource(id = R.string.dawn))
-                        Text(text = sunrise)
-                        Text(text = "TEXT to MOCK image FOR sunrise")
-                        //Image(painter = , contentDescription = )
+                    Column(
+                        modifier = Modifier
+                            .weight(.5f)
+                            .align(CenterVertically)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.dawn),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = sunrise,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.sunrise),
+                            contentDescription = "",
+                            Modifier.size(86.dp)
+                        )
                     }
                     Spacer(Modifier.size(8.dp))
-                    Column(modifier = Modifier.weight(.5f)) {
-                        Text(text = stringResource(id = R.string.dusk))
-                        Text(text = sunset)
-                        Text(text = "TEXT to MOCK image FOR sunset")
-                        //Image(painter = , contentDescription = )
+                    Column(
+                        modifier = Modifier
+                            .weight(.5f)
+                            .fillMaxWidth()
+                            .align(CenterVertically),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.dusk),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = sunset,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.sunset),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(86.dp)
+                                .fillMaxWidth()
+                        )
                     }
                 }
             }
@@ -240,8 +322,10 @@ fun MainScreen(
             Text(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(.07f),
-                text = stringResource(id = R.string.last_update) + " $lastUpdateTime",
+                    .weight(.05f),
+                text = stringResource(id = R.string.last_update)
+                        + " $lastUpdateTime "
+                        + stringResource(id = R.string.local_time),
                 fontSize = 10.sp
             )
         }

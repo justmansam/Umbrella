@@ -8,4 +8,7 @@
     <string name="humidity">Nem</string>
     <string name="wind">Rüzgar</string>
     <string name="last_update">Son güncelleme</string>
+    <string name="no_connection">Ağ bağlantısı yok!</string>
+    <string name="type_city">Şehir arayın (Stockholm veya London,US)</string>
+    <string name="local_time">(yerel saat)</string>
 </resources>

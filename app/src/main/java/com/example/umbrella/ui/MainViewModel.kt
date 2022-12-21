@@ -1,10 +1,11 @@
-package com.example.umbrella
+package com.example.umbrella.ui
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.api.RetrofitInstance
 import com.example.umbrella.api.WeatherDataItem
+import com.example.umbrella.sharedPrefImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
