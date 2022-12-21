@@ -1,6 +1,8 @@
 package com.example.umbrella
 
 import android.Manifest
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.ConnectivityManager
@@ -15,6 +17,9 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.umbrella.MainViewModel.Companion.citySP
+import com.example.umbrella.pref.SharedPreferencesImpl
 import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,11 +31,17 @@ SHARED VAR DİYİP STATE OLUŞTUR BÖYLECE APİ SUCCESS OLMAZSA SHARED STATE CHE
  */
 
 private lateinit var fusedLocationClient: FusedLocationProviderClient
+lateinit var sharedPref: SharedPreferences
+lateinit var sharedPrefImpl: SharedPreferencesImpl
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkConnection()
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        lifecycleScope.launchWhenCreated {
+            lookForSharedPref(sharedPref)
+            checkConnection()
+        }
         checkPermissionAndGetLocation()
     }
 
@@ -80,11 +91,14 @@ class MainActivity : ComponentActivity() {
                                     "Last location alınamadı!: $it",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                lookForSharedPref(sharedPref)
+                                setScreenContent("null", "null", "null")
                             }
                     }
                     else -> {
                         // No location access granted.
                         Toast.makeText(this, "Oooo vermedin demek!", Toast.LENGTH_SHORT).show()
+                        lookForSharedPref(sharedPref)
                         setScreenContent(
                             "null", "null", "null"
                         )
@@ -103,6 +117,13 @@ class MainActivity : ComponentActivity() {
                     )
                 }
         }
+    }
+
+    private fun lookForSharedPref(sharedPref: SharedPreferences) {
+        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
+        val storedCity = sharedPrefImpl.getValue(citySP)
+        Toast.makeText(this, "ŞEHRE GELLL!: $storedCity", Toast.LENGTH_SHORT)
+            .show()
     }
 
     private fun setScreenContent(city: String, latitude: String, longitude: String) {

@@ -22,20 +22,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
     SaveStateHandle ile daha verimli çalışması ve compose free olması (reusable with xml)
      */
     //var tempr: Double by mutableStateOf(0.0) //COMPOSE STATE as an alternative
-    // FROM GENERAL UI STATE MANAGEMENT
+    // FOR GENERAL UI STATE MANAGEMENT
     private val _apiSuccess: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val apiSuccess = _apiSuccess.asStateFlow() //STATE FLOW
     private val _hasLocation: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val hasLocation = _hasLocation.asStateFlow() //STATE FLOW
     private val _isSearchActive: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchActive = _isSearchActive.asStateFlow()
+    private val _isSearchFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchFailed = _isSearchFailed.asStateFlow()
     private val _hasSharedPref: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val hasSharedPref = _hasSharedPref.asStateFlow()
 
-    // FROM SEARCH or LOCATION
+    // FROM SEARCH (CITY or LOCATION)
     private val _city: MutableStateFlow<String> = MutableStateFlow("")
     val city = _city.asStateFlow()
-
     /*
     private val _latitude: MutableStateFlow<String> = MutableStateFlow("")
     val latitude = _latitude.asStateFlow()
@@ -43,6 +44,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val longitude = _longitude.asStateFlow()
 
      */
+
     // FROM API RESPONSE
     private val _currentTemp: MutableStateFlow<Int> = MutableStateFlow(0)
     val currentTemp = _currentTemp.asStateFlow()
@@ -66,10 +68,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val lastUpdateTime = _lastUpdateTime.asStateFlow()
 
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
-        //var temp: Double? = null
         viewModelScope.launch {
             val response = try {
-                if (latitude != null && longitude != null) {
+                if (latitude != null && longitude != null && latitude != "null" && longitude != "null") {
                     _hasLocation.value = true
                     RetrofitInstance.api.getWeatherByCoordination(
                         latitude,
@@ -77,9 +78,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                         API_KEY
                     )
                 } else {
-                    _city.value = city!!
                     RetrofitInstance.api.getWeatherByCity(
-                        city,
+                        city!!,
                         API_KEY
                     )
                 }
@@ -94,25 +94,33 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 return@launch
             }
             if (response.isSuccessful) {
+                getResponses(response)
                 _apiSuccess.value = true
-                _city.value = response.body()!!.name
-                _currentTemp.value = response.body()!!.main.temp.toInt()
-                _feelsLikeTemp.value = response.body()!!.main.feels_like.toInt()
-                _minTemp.value = response.body()!!.main.temp_min.toInt()
-                _maxTemp.value = response.body()!!.main.temp_max.toInt()
-                _visibility.value = response.body()!!.visibility / 100
-                _humidity.value = response.body()!!.main.humidity
-                _wind.value = response.body()!!.wind.speed.toInt()
-                _sunrise.value = calculateLocalTime(response, response.body()!!.sys.sunrise, true)
-                _sunset.value = calculateLocalTime(response, response.body()!!.sys.sunset, true)
-                _lastUpdateTime.value = calculateLocalTime(response, response.body()!!.dt, false)
+                _isSearchActive.value = false
+                _isSearchFailed.value = false
             } else {
                 // Check for typo for city name you typed!
-                _apiSuccess.value = false //BURASI BOZUK
-                searchingActivated()
+                _apiSuccess.value = false
+                _isSearchActive.value = true
+                _isSearchFailed.value = true
                 Log.e("TAGGG ", "Check the city name you typed")
             }
         }
+    }
+
+    private fun getResponses(response: Response<WeatherDataItem>) {
+        _city.value = response.body()!!.name
+        _currentTemp.value = response.body()!!.main.temp.toInt()
+        _feelsLikeTemp.value = response.body()!!.main.feels_like.toInt()
+        _minTemp.value = response.body()!!.main.temp_min.toInt()
+        _maxTemp.value = response.body()!!.main.temp_max.toInt()
+        _visibility.value = response.body()!!.visibility / 100
+        _humidity.value = response.body()!!.main.humidity
+        _wind.value = response.body()!!.wind.speed.toInt()
+        _sunrise.value = calculateLocalTime(response, response.body()!!.sys.sunrise, true)
+        _sunset.value = calculateLocalTime(response, response.body()!!.sys.sunset, true)
+        _lastUpdateTime.value = calculateLocalTime(response, response.body()!!.dt, false)
+        updateSharedPreferences() //Coroutine
     }
 
     private fun calculateLocalTime(
@@ -140,11 +148,20 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun searchingActivated() {
+    private fun updateSharedPreferences() {
+        viewModelScope.launch {
+            sharedPrefImpl.setValue(citySP, city.value)
+            Log.e("BİBAKHELECANIMINİÇİ ", "BİŞE")
+        }
+    }
+
+    fun searchActivated() {
         _isSearchActive.value = _isSearchActive.value != true
     }
 
     companion object {
         private const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
+        const val PREF_FILE_KEY = "com.example.myapp.PREFERENCE_FILE_KEY"
+        const val citySP = "city"
     }
 }

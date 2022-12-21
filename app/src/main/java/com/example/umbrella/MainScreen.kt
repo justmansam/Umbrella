@@ -26,8 +26,11 @@ fun MainScreen(
     val apiSuccess by viewModel.apiSuccess.collectAsState()
     val hasLocation by viewModel.hasLocation.collectAsState()
     val isSearchActive by viewModel.isSearchActive.collectAsState()
+    val isSearchFailed by viewModel.isSearchFailed.collectAsState()
     val hasSharedPref by viewModel.hasSharedPref.collectAsState()
     val city by viewModel.city.collectAsState()
+    //val latitude by viewModel.latitude.collectAsState()
+    //val longitude by viewModel.longitude.collectAsState()
     val currentTemperature by viewModel.currentTemp.collectAsState()
     val feelsLikeTemperature by viewModel.feelsLikeTemp.collectAsState()
     val minTemperature by viewModel.minTemp.collectAsState()
@@ -54,11 +57,11 @@ fun MainScreen(
             //Send default place or remember (shared pref) the previous place that user selected
             viewModel.showApiCallResult(cityFromMain, null, null)
         } else {
-            viewModel.searchingActivated()
+            viewModel.searchActivated()
         }
     }
 
-    if (!apiSuccess) {
+    if (!hasLocation) { //SIKINTILI IZIN VERMEYINCE ÇALIŞMIYOR
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -101,11 +104,9 @@ fun MainScreen(
                         maxLines = 1
                     )
                     Button(onClick = {
-                        viewModel.searchingActivated()
+                        //viewModel.searchActivated()
                         viewModel.showApiCallResult(cityForSearch, null, null)
-                    }) {
-
-                    }
+                    }) {}
                 }
                 Spacer(Modifier.size(16.dp))
             }
@@ -126,7 +127,7 @@ fun MainScreen(
                             modifier = Modifier
                                 .weight(.5f)
                                 .clickable {
-                                    viewModel.searchingActivated()
+                                    viewModel.searchActivated()
                                 }
                         ) {
                             Text(text = "$currentTemperature\u00B0", fontSize = 32.sp)
@@ -226,4 +227,28 @@ fun MainScreen(
             )
         }
     }
+
+    /*
+    //Should be checked once! It shown every time it recomposes. So send a hasShown message to viewModel
+    if (isSearchActive) {
+        Toast.makeText(context, "Type a city name", Toast.LENGTH_SHORT).show()
+    }
+     */
+
+    /*
+    TAM ÇALIŞMIYOR (TOAST IS SHOWN EKLE!)
+     */
+    /*
+    val notFoundAlert = Toast.makeText(
+        context,
+        "City not found! Please check the city name you entered!",
+        Toast.LENGTH_LONG
+    )
+    if (isSearchFailed) {
+        notFoundAlert.show()
+    } else {
+        notFoundAlert.cancel()
+    }
+
+     */
 }
