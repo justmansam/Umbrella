@@ -38,29 +38,13 @@ fun MainScreen(
     sunriseFromMain: String?,
     sunsetFromMain: String?,
     lastUpdateTimeFromMain: String?,
+    modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel()
 ) {
-    val apiHasResponse by viewModel.apiHasResponse.collectAsState()
-    val hasLocation by viewModel.hasLocation.collectAsState()
-    val isSearchActive by viewModel.isSearchActive.collectAsState()
-    val isSearchFailed by viewModel.isSearchFailed.collectAsState()
-    val hasSharedPref by viewModel.hasSharedPref.collectAsState()
-    val city by viewModel.city.collectAsState()
-    //val latitude by viewModel.latitude.collectAsState()
-    //val longitude by viewModel.longitude.collectAsState()
-    val currentTemperature by viewModel.currentTemp.collectAsState()
-    val feelsLikeTemperature by viewModel.feelsLikeTemp.collectAsState()
-    val minTemperature by viewModel.minTemp.collectAsState()
-    val maxTemperature by viewModel.maxTemp.collectAsState()
-    val visibility by viewModel.visibility.collectAsState()
-    val humidity by viewModel.humidity.collectAsState()
-    val wind by viewModel.wind.collectAsState()
-    val sunrise by viewModel.sunrise.collectAsState()
-    val sunset by viewModel.sunset.collectAsState()
-    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
+    val mainUiState by viewModel.mainUiState.collectAsState()
 
     // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
-    if (!hasSharedPref && cityFromMain != null && currentTempFromMain != null && lastUpdateTimeFromMain != null) {
+    if (!mainUiState.hasSharedPref && cityFromMain != null && currentTempFromMain != null && lastUpdateTimeFromMain != null) {
         viewModel.exposeLocalData(
             cityFromMain,
             currentTempFromMain,
@@ -77,32 +61,32 @@ fun MainScreen(
     }
 
     // TO Show weather accordingly if user gave location permission on app start (for once)!!!
-    if (!apiHasResponse && latitudeFromMain != null && longitudeFromMain != null) {
+    if (!mainUiState.apiHasResponse && latitudeFromMain != null && longitudeFromMain != null) {
         viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
     }
 
     // TO Show loading state if user initiates an action to change location in the screen!!!
-    if (!hasLocation && !hasSharedPref && !isSearchActive) {
+    if (!mainUiState.hasLocation && !mainUiState.hasSharedPref && !mainUiState.isSearchActive) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
             CircularProgressIndicator(
-                modifier = Modifier
+                modifier = modifier
                     .weight(.48f)
                     .size(64.dp)
                     .align(CenterHorizontally)
                     .padding(top = 32.dp)
             )
             CircularProgressIndicator(
-                modifier = Modifier
+                modifier = modifier
                     .weight(.24f)
                     .size(64.dp)
                     .align(CenterHorizontally)
             )
             CircularProgressIndicator(
-                modifier = Modifier
+                modifier = modifier
                     .weight(.24f)
                     .size(64.dp)
                     .align(CenterHorizontally)
@@ -110,17 +94,17 @@ fun MainScreen(
         }
     } else {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            if (isSearchActive) {
+            if (mainUiState.isSearchActive) {
                 var cityForSearch by remember {
                     mutableStateOf("")
                 }
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier.fillMaxWidth(),
                     value = cityForSearch,
                     onValueChange = { cityForSearch = it },
                     label = { Text(stringResource(id = R.string.type_city)) },
@@ -133,58 +117,58 @@ fun MainScreen(
                     ),
                     maxLines = 1
                 )
-                Spacer(Modifier.size(16.dp))
+                Spacer(modifier.size(16.dp))
             }
             Card(
-                modifier = Modifier
-                    .weight(.48f)
+                modifier = modifier
+                    .weight(.50f)
                     .fillMaxSize()
                     .clickable { viewModel.searchActivated() },
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
                 Column(
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(16.dp)
                         .fillMaxSize()
                 ) {
-                    Row(modifier = Modifier.fillMaxSize()) {
+                    Row(modifier = modifier.fillMaxSize()) {
                         Column(
-                            modifier = Modifier
+                            modifier = modifier
                                 .weight(.6f)
                                 .align(CenterVertically),
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "$currentTemperature\u00B0",
+                                text = mainUiState.currentTemperature.toString() + "\u00B0",
                                 fontSize = 84.sp,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = city,
+                                text = mainUiState.city,
                                 fontSize = 32.sp,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(Modifier.size(4.dp))
+                            Spacer(modifier.size(4.dp))
                             Text(
-                                text = stringResource(id = R.string.feels_like) + " $feelsLikeTemperature\u00B0",
+                                text = stringResource(id = R.string.feels_like) + " " + mainUiState.feelsLikeTemperature.toString() + "\u00B0",
                                 fontSize = 16.sp,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(Modifier.size(2.dp))
+                            Spacer(modifier.size(2.dp))
                             Text(
-                                text = "Min $minTemperature\u00B0 / Max $maxTemperature°",
+                                text = "Min " + mainUiState.minTemperature.toString() + "\u00B0 / Max " + mainUiState.maxTemperature.toString() + "°",
                                 fontSize = 16.sp,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
                         }
-                        Spacer(Modifier.size(8.dp))
+                        Spacer(modifier.size(8.dp))
                         Image(
-                            modifier = Modifier
+                            modifier = modifier
                                 .weight(.4f)
                                 .size(156.dp)
                                 .padding(top = 8.dp),
@@ -194,112 +178,112 @@ fun MainScreen(
                     }
                 }
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(modifier.size(16.dp))
             Card(
-                modifier = Modifier
-                    .weight(.26f)
+                modifier = modifier
+                    .weight(.28f)
                     .fillMaxSize(),
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(16.dp)
                         .fillMaxSize()
                 ) {
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_visibility),
                             contentDescription = "",
-                            Modifier.size(48.dp)
+                            modifier.size(48.dp)
                         )
                         Text(text = stringResource(id = R.string.visibility))
-                        Text(text = "$visibility %")
+                        Text(text = mainUiState.visibility.toString() + " %")
                     }
-                    Spacer(Modifier.size(4.dp))
+                    Spacer(modifier.size(4.dp))
                     Divider(
-                        Modifier
+                        modifier
                             .size(2.dp, 96.dp)
                             .align(CenterVertically)
                     )
-                    Spacer(Modifier.size(4.dp))
+                    Spacer(modifier.size(4.dp))
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_humidity),
                             contentDescription = "",
-                            Modifier.size(48.dp)
+                            modifier.size(48.dp)
                         )
                         Text(text = stringResource(id = R.string.humidity))
-                        Text(text = "$humidity %")
+                        Text(text = mainUiState.humidity.toString() + " %")
                     }
-                    Spacer(Modifier.size(4.dp))
+                    Spacer(modifier.size(4.dp))
                     Divider(
-                        Modifier
+                        modifier
                             .size(2.dp, 96.dp)
                             .align(CenterVertically)
                     )
-                    Spacer(Modifier.size(4.dp))
+                    Spacer(modifier.size(4.dp))
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_wind),
                             contentDescription = "",
-                            Modifier.size(48.dp)
+                            modifier.size(48.dp)
                         )
                         Text(text = stringResource(id = R.string.wind))
-                        Text(text = "$wind km/h")
+                        Text(text = mainUiState.wind.toString() + " km/h")
                     }
                 }
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(modifier.size(16.dp))
             Card(
-                modifier = Modifier
-                    .weight(.26f)
+                modifier = modifier
+                    .weight(.28f)
                     .fillMaxSize(),
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(16.dp)
                         .fillMaxSize()
                         .align(CenterHorizontally)
                 ) {
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
                             .weight(.5f)
                             .align(CenterVertically)
                     ) {
                         Text(
                             text = stringResource(id = R.string.dawn),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            text = sunrise,
-                            modifier = Modifier.fillMaxWidth(),
+                            text = mainUiState.sunrise,
+                            modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
                         )
                         Image(
                             painter = painterResource(id = R.drawable.ic_sunrise),
                             contentDescription = "",
-                            Modifier.size(86.dp)
+                            modifier.size(86.dp)
                         )
                     }
-                    Spacer(Modifier.size(8.dp))
+                    Spacer(modifier.size(8.dp))
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
                             .weight(.5f)
                             .fillMaxWidth()
                             .align(CenterVertically),
@@ -307,32 +291,32 @@ fun MainScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.dusk),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            text = sunset,
-                            modifier = Modifier.fillMaxWidth(),
+                            text = mainUiState.sunset,
+                            modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
                         )
                         Image(
                             painter = painterResource(id = R.drawable.ic_sunset),
                             contentDescription = "",
-                            modifier = Modifier
+                            modifier = modifier
                                 .size(86.dp)
                                 .fillMaxWidth()
                         )
                     }
                 }
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(modifier.size(16.dp))
             Text(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .weight(.05f),
                 text = stringResource(id = R.string.last_update)
-                        + " $lastUpdateTime "
-                        + stringResource(id = R.string.local_time),
+                        + " " + mainUiState.lastUpdateTime
+                        + " " + stringResource(id = R.string.local_time),
                 fontSize = 10.sp
             )
         }

@@ -35,12 +35,6 @@ import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
-/*
-HERŞEYDEN ÖNCE İNTERNETİ KONTROL ET!!!
-INTERNET YOKSA ÖNCE SHARED PREF AL!!!
-SHARED VAR DİYİP STATE OLUŞTUR BÖYLECE APİ SUCCESS OLMAZSA SHARED STATE CHECK EDİLİP GÖSTERİLİR!
- */
-
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 lateinit var sharedPref: SharedPreferences
 lateinit var sharedPrefImpl: SharedPreferencesImpl

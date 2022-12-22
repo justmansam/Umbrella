@@ -8,7 +8,9 @@ import com.example.umbrella.api.WeatherDataItem
 import com.example.umbrella.sharedPrefImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import retrofit2.Response
@@ -23,58 +25,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
     SaveStateHandle ile daha verimli çalışması ve compose free olması (reusable with xml)
      */
     //var tempr: Double by mutableStateOf(0.0) //COMPOSE STATE as an alternative
-    // FOR GENERAL UI STATE MANAGEMENT
-    private val _apiHasResponse: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val apiHasResponse = _apiHasResponse.asStateFlow() //STATE FLOW
-    private val _hasLocation: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val hasLocation = _hasLocation.asStateFlow() //STATE FLOW
-    private val _isSearchActive: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isSearchActive = _isSearchActive.asStateFlow()
-    private val _isSearchFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isSearchFailed = _isSearchFailed.asStateFlow()
-    private val _hasSharedPref: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val hasSharedPref = _hasSharedPref.asStateFlow()
-
-    // FROM SEARCH (CITY or LOCATION)
-    private val _city: MutableStateFlow<String> = MutableStateFlow("")
-    val city = _city.asStateFlow()
-    /*
-    private val _latitude: MutableStateFlow<String> = MutableStateFlow("")
-    val latitude = _latitude.asStateFlow()
-    private val _longitude: MutableStateFlow<String> = MutableStateFlow("")
-    val longitude = _longitude.asStateFlow()
-
-     */
-
-    // FROM API RESPONSE
-    private val _currentTemp: MutableStateFlow<Int> = MutableStateFlow(0)
-    val currentTemp = _currentTemp.asStateFlow()
-    private val _feelsLikeTemp: MutableStateFlow<Int> = MutableStateFlow(0)
-    val feelsLikeTemp = _feelsLikeTemp.asStateFlow()
-    private val _minTemp: MutableStateFlow<Int> = MutableStateFlow(0)
-    val minTemp = _minTemp.asStateFlow()
-    private val _maxTemp: MutableStateFlow<Int> = MutableStateFlow(0)
-    val maxTemp = _maxTemp.asStateFlow()
-    private val _visibility: MutableStateFlow<Int> = MutableStateFlow(0)
-    val visibility = _visibility.asStateFlow()
-    private val _humidity: MutableStateFlow<Int> = MutableStateFlow(0)
-    val humidity = _humidity.asStateFlow()
-    private val _wind: MutableStateFlow<Int> = MutableStateFlow(0)
-    val wind = _wind.asStateFlow()
-    private val _sunrise: MutableStateFlow<String> = MutableStateFlow("")
-    val sunrise = _sunrise.asStateFlow()
-    private val _sunset: MutableStateFlow<String> = MutableStateFlow("")
-    val sunset = _sunset.asStateFlow()
-    private val _lastUpdateTime: MutableStateFlow<String> = MutableStateFlow("")
-    val lastUpdateTime = _lastUpdateTime.asStateFlow()
+    // Main UI state
+    private val _mainUiState = MutableStateFlow(MainUiState())
+    val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
-        _hasLocation.value = false
-        _hasSharedPref.value = false
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                hasLocation = false,
+                hasSharedPref = false
+            )
+        }
         viewModelScope.launch {
             val response = try {
                 if (latitude != null && longitude != null && latitude != "null" && longitude != "null") {
-                    _hasLocation.value = true
+                    _mainUiState.update { currentState -> currentState.copy(hasLocation = true) }
                     RetrofitInstance.api.getWeatherByCoordination(
                         latitude,
                         longitude,
@@ -96,41 +61,53 @@ class MainViewModel @Inject constructor() : ViewModel() {
             } catch (e: IOException) {
                 // CHECK INTERNET
                 Log.e("TAGGG ", "IOExeption, check your connection")
-                _apiHasResponse.value = false
+                _mainUiState.update { currentState -> currentState.copy(apiHasResponse = false) }
                 return@launch
             } catch (e: HttpException) {
                 Log.e("TAGGG ", "HttpException, unexpected response")
-                _apiHasResponse.value = false
+                _mainUiState.update { currentState -> currentState.copy(apiHasResponse = false) }
                 return@launch
             }
             if (response.isSuccessful) {
-                _apiHasResponse.value = true
-                _isSearchActive.value = false
-                _isSearchFailed.value = false
                 getResponses(response)
+                _mainUiState.update { currentState ->
+                    currentState.copy(
+                        apiHasResponse = true,
+                        isSearchActive = false,
+                        isSearchFailed = false
+                    )
+                }
             } else {
                 // Check for typo for city name you typed!
-                _apiHasResponse.value = false
-                _isSearchActive.value = true
-                _isSearchFailed.value = true
+                _mainUiState.update { currentState ->
+                    currentState.copy(
+                        apiHasResponse = false,
+                        isSearchActive = true,
+                        isSearchFailed = true
+                    )
+                }
                 Log.e("TAGGG ", "Check the city name you typed")
             }
         }
     }
 
     private fun getResponses(response: Response<WeatherDataItem>) {
-        _city.value = response.body()!!.name
-        _currentTemp.value = response.body()!!.main.temp.toInt()
-        _feelsLikeTemp.value = response.body()!!.main.feels_like.toInt()
-        _minTemp.value = response.body()!!.main.temp_min.toInt()
-        _maxTemp.value = response.body()!!.main.temp_max.toInt()
-        _visibility.value = response.body()!!.visibility / 100
-        _humidity.value = response.body()!!.main.humidity
-        _wind.value = response.body()!!.wind.speed.toInt()
-        _sunrise.value = calculateLocalTime(response, response.body()!!.sys.sunrise, true)
-        _sunset.value = calculateLocalTime(response, response.body()!!.sys.sunset, true)
-        _lastUpdateTime.value = calculateLocalTime(response, response.body()!!.dt, false)
-        updateSharedPreferences() //Coroutine
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                city = response.body()!!.name,
+                currentTemperature = response.body()!!.main.temp.toInt(),
+                feelsLikeTemperature = response.body()!!.main.feels_like.toInt(),
+                minTemperature = response.body()!!.main.temp_min.toInt(),
+                maxTemperature = response.body()!!.main.temp_max.toInt(),
+                visibility = response.body()!!.visibility / 100,
+                humidity = response.body()!!.main.humidity,
+                wind = response.body()!!.wind.speed.toInt(),
+                sunrise = calculateLocalTime(response, response.body()!!.sys.sunrise, true),
+                sunset = calculateLocalTime(response, response.body()!!.sys.sunset, true),
+                lastUpdateTime = calculateLocalTime(response, response.body()!!.dt, false)
+            )
+        }
+        updateSharedPreferences()
     }
 
     private fun calculateLocalTime(
@@ -160,23 +137,26 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private fun updateSharedPreferences() {
         viewModelScope.launch {
-            sharedPrefImpl.setValue(citySP, city.value)
-            sharedPrefImpl.setValue(currentTempSP, currentTemp.value.toString())
-            sharedPrefImpl.setValue(feelsLikeTempSP, feelsLikeTemp.value.toString())
-            sharedPrefImpl.setValue(minTempSP, minTemp.value.toString())
-            sharedPrefImpl.setValue(maxTempSP, maxTemp.value.toString())
-            sharedPrefImpl.setValue(visibilitySP, visibility.value.toString())
-            sharedPrefImpl.setValue(humiditySP, humidity.value.toString())
-            sharedPrefImpl.setValue(windSP, wind.value.toString())
-            sharedPrefImpl.setValue(sunriseSP, sunrise.value)
-            sharedPrefImpl.setValue(sunsetSP, sunset.value)
-            sharedPrefImpl.setValue(lastUpdateTimeSP, lastUpdateTime.value)
+            sharedPrefImpl.setValue(citySP, mainUiState.value.city)
+            sharedPrefImpl.setValue(currentTempSP, mainUiState.value.currentTemperature.toString())
+            sharedPrefImpl.setValue(
+                feelsLikeTempSP,
+                mainUiState.value.feelsLikeTemperature.toString()
+            )
+            sharedPrefImpl.setValue(minTempSP, mainUiState.value.minTemperature.toString())
+            sharedPrefImpl.setValue(maxTempSP, mainUiState.value.maxTemperature.toString())
+            sharedPrefImpl.setValue(visibilitySP, mainUiState.value.visibility.toString())
+            sharedPrefImpl.setValue(humiditySP, mainUiState.value.humidity.toString())
+            sharedPrefImpl.setValue(windSP, mainUiState.value.wind.toString())
+            sharedPrefImpl.setValue(sunriseSP, mainUiState.value.sunrise)
+            sharedPrefImpl.setValue(sunsetSP, mainUiState.value.sunset)
+            sharedPrefImpl.setValue(lastUpdateTimeSP, mainUiState.value.lastUpdateTime)
         }
-        _hasSharedPref.value = true
+        _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
     }
 
     fun searchActivated() {
-        _isSearchActive.value = _isSearchActive.value != true
+        _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
     }
 
     fun exposeLocalData(
@@ -192,22 +172,28 @@ class MainViewModel @Inject constructor() : ViewModel() {
         sunsetFromMain: String?,
         lastUpdateTimeFromMain: String?
     ) {
-        _city.value = cityFromMain!!
-        _currentTemp.value = currentTempFromMain!!.toInt()
-        _feelsLikeTemp.value = feelsLikeTempFromMain!!.toInt()
-        _minTemp.value = minTempFromMain!!.toInt()
-        _maxTemp.value = maxTempFromMain!!.toInt()
-        _visibility.value = visibilityFromMain!!.toInt()
-        _humidity.value = humidityFromMain!!.toInt()
-        _wind.value = windFromMain!!.toInt()
-        _sunrise.value = sunriseFromMain!!
-        _sunset.value = sunsetFromMain!!
-        _lastUpdateTime.value = lastUpdateTimeFromMain!!
-        _hasSharedPref.value = true
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                city = cityFromMain!!,
+                currentTemperature = currentTempFromMain!!.toInt(),
+                feelsLikeTemperature = feelsLikeTempFromMain!!.toInt(),
+                minTemperature = minTempFromMain!!.toInt(),
+                maxTemperature = maxTempFromMain!!.toInt(),
+                visibility = visibilityFromMain!!.toInt(),
+                humidity = humidityFromMain!!.toInt(),
+                wind = windFromMain!!.toInt(),
+                sunrise = sunriseFromMain!!,
+                sunset = sunsetFromMain!!,
+                lastUpdateTime = lastUpdateTimeFromMain!!,
+                hasSharedPref = true
+            )
+        }
     }
 
     companion object {
         private const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
+
+        // FOR Shared Preferences
         const val citySP = "city"
         const val currentTempSP = "currentTemp"
         const val feelsLikeTempSP = "feelsLikeTemp"
