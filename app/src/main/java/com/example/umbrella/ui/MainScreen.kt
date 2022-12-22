@@ -65,6 +65,11 @@ fun MainScreen(
         viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
     }
 
+    // TO Show search bar if user landed for the first time or still didn't give location permission!
+    if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive) {
+        viewModel.searchActivated()
+    }
+
     // MAIN SCREEN
     if (mainUiState.isInProcess) {
         ProcessField(modifier)

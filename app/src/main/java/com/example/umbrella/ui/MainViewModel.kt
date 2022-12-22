@@ -62,11 +62,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
             } catch (e: IOException) {
                 // CHECK INTERNET
                 Log.e("TAGGG ", "IOExeption, check your connection")
-                _mainUiState.update { currentState -> currentState.copy(apiHasResponse = false) }
+                _mainUiState.update { currentState ->
+                    currentState.copy(
+                        apiHasResponse = false,
+                        isInProcess = false
+                    )
+                }
                 return@launch
             } catch (e: HttpException) {
                 Log.e("TAGGG ", "HttpException, unexpected response")
-                _mainUiState.update { currentState -> currentState.copy(apiHasResponse = false) }
+                _mainUiState.update { currentState ->
+                    currentState.copy(
+                        apiHasResponse = false,
+                        isInProcess = false
+                    )
+                }
                 return@launch
             }
             if (response.isSuccessful) {
@@ -82,6 +92,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 // Check for typo for city name you typed!
                 _mainUiState.update { currentState ->
                     currentState.copy(
+                        isInProcess = false,
                         apiHasResponse = false,
                         isSearchActive = true,
                         isSearchFailed = true
@@ -89,11 +100,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
                 Log.e("TAGGG ", "Check the city name you typed")
             }
-        }
-        _mainUiState.update { currentState ->
-            currentState.copy(
-                isInProcess = false
-            )
         }
     }
 
@@ -111,6 +117,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 sunrise = calculateLocalTime(response, response.body()!!.sys.sunrise, true),
                 sunset = calculateLocalTime(response, response.body()!!.sys.sunset, true),
                 lastUpdateTime = calculateLocalTime(response, response.body()!!.dt, false)
+            )
+        }
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                isInProcess = false
             )
         }
         updateSharedPreferences()
@@ -180,7 +191,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     ) {
         _mainUiState.update { currentState ->
             currentState.copy(
-                isInProcess = false,
                 city = cityFromMain!!,
                 currentTemperature = currentTempFromMain!!.toInt(),
                 feelsLikeTemperature = feelsLikeTempFromMain!!.toInt(),

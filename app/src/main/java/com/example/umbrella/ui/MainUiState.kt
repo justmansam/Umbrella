@@ -9,7 +9,7 @@ data class MainUiState(
     val hasSharedPref: Boolean = false,
     val isInProcess: Boolean = false,
     // FOR DATA UPDATE (according to CITY or LOCATION api RESPONSE)
-    val city: String = "",
+    val city: String = "- - -",
     //val latitude: String = "",
     //val longitude: String = "",
     val currentTemperature: Int = 0,
@@ -19,7 +19,7 @@ data class MainUiState(
     val visibility: Int = 0,
     val humidity: Int = 0,
     val wind: Int = 0,
-    val sunrise: String = "",
-    val sunset: String = "",
-    val lastUpdateTime: String = ""
+    val sunrise: String = "00:00",
+    val sunset: String = "00:00",
+    val lastUpdateTime: String = "00:00"
 )
