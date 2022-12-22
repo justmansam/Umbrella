@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         sharedPrefImpl = SharedPreferencesImpl(sharedPref)
 
+        lookForSharedPref()
         lifecycleScope.launchWhenCreated {
             checkConnection()
         }
@@ -100,7 +101,7 @@ class MainActivity : ComponentActivity() {
                                 ).show()
                             }
                             .addOnFailureListener {
-                                lookForSharedPref()
+                                //lookForSharedPref()
                                 Toast.makeText(
                                     this,
                                     "Last location alınamadı!: $it",
@@ -110,7 +111,7 @@ class MainActivity : ComponentActivity() {
                     }
                     else -> {
                         // No location access granted.
-                        lookForSharedPref()
+                        //lookForSharedPref()
                         Toast.makeText(this, "Oooo vermedin demek!", Toast.LENGTH_SHORT).show()
                     }
                 }

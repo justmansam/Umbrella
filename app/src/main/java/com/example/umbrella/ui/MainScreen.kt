@@ -59,6 +59,7 @@ fun MainScreen(
     val sunset by viewModel.sunset.collectAsState()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
 
+    // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
     if (!hasSharedPref && cityFromMain != null && currentTempFromMain != null && lastUpdateTimeFromMain != null) {
         viewModel.exposeLocalData(
             cityFromMain,
@@ -75,15 +76,12 @@ fun MainScreen(
         )
     }
 
-    if (!apiHasResponse) {
-        if (latitudeFromMain != null && longitudeFromMain != null) {
-            viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
-        } else {
-            //Send default place or remember (shared pref) the previous place that user selected
-            viewModel.showApiCallResult(cityFromMain, null, null)
-        }
+    // TO Show weather accordingly if user gave location permission on app start (for once)!!!
+    if (!apiHasResponse && latitudeFromMain != null && longitudeFromMain != null) {
+        viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
     }
 
+    // TO Show loading state if user initiates an action to change location in the screen!!!
     if (!hasLocation && !hasSharedPref && !isSearchActive) {
         Column(
             modifier = Modifier
@@ -214,8 +212,11 @@ fun MainScreen(
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
-                        Text(text = "TEXT to MOCK image FOR visibility")
-                        //Image(painter = , contentDescription = )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_visibility),
+                            contentDescription = "",
+                            Modifier.size(48.dp)
+                        )
                         Text(text = stringResource(id = R.string.visibility))
                         Text(text = "$visibility %")
                     }
@@ -231,8 +232,11 @@ fun MainScreen(
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
-                        Text(text = "TEXT to MOCK image FOR humidity")
-                        //Image(painter = , contentDescription = )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_humidity),
+                            contentDescription = "",
+                            Modifier.size(48.dp)
+                        )
                         Text(text = stringResource(id = R.string.humidity))
                         Text(text = "$humidity %")
                     }
@@ -248,8 +252,11 @@ fun MainScreen(
                             .weight(1f)
                             .align(CenterVertically)
                     ) {
-                        Text(text = "TEXT to MOCK image FOR wind")
-                        //Image(painter = , contentDescription = )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_wind),
+                            contentDescription = "",
+                            Modifier.size(48.dp)
+                        )
                         Text(text = stringResource(id = R.string.wind))
                         Text(text = "$wind km/h")
                     }
@@ -285,7 +292,7 @@ fun MainScreen(
                             textAlign = TextAlign.Center
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.sunrise),
+                            painter = painterResource(id = R.drawable.ic_sunrise),
                             contentDescription = "",
                             Modifier.size(86.dp)
                         )
@@ -309,7 +316,7 @@ fun MainScreen(
                             textAlign = TextAlign.Center
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.sunset),
+                            painter = painterResource(id = R.drawable.ic_sunset),
                             contentDescription = "",
                             modifier = Modifier
                                 .size(86.dp)
