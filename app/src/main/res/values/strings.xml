@@ -10,4 +10,8 @@
     <string name="no_connection">No network connection!</string>
     <string name="type_city">Search city (Stockholm or London,US)</string>
     <string name="local_time">(local time)</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="alert_title">Give location permission for the app to work effectively!</string>
+    <string name="permission_reminder">You can give the location permission from the phone\'s settings!</string>
 </resources>

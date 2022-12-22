@@ -1,6 +1,7 @@
 package com.example.umbrella
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
@@ -38,18 +40,17 @@ import com.google.android.gms.location.LocationServices
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 lateinit var sharedPref: SharedPreferences
 lateinit var sharedPrefImpl: SharedPreferencesImpl
+lateinit var permissionToAsk: ActivityResultLauncher<Array<String>>
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
-
-        lookForSharedPref()
         lifecycleScope.launchWhenCreated {
             checkConnection()
         }
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
+        lookForSharedPref()
         checkPermissionAndGetLocation()
     }
 
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
             ContextCompat.getSystemService(this, ConnectivityManager::class.java)
         val currentNetwork = connectivityManager?.activeNetwork
         if (currentNetwork == null) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -68,17 +69,13 @@ class MainActivity : ComponentActivity() {
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) { // If permission is not granted
-            Toast.makeText(this, "Belli ki izin vermemişsin!", Toast.LENGTH_SHORT).show()
-            registerForActivityResult(
+        ) {
+            showPermissionAlert(this)
+            permissionToAsk = registerForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { permissions ->
                 when {
                     permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                        // Only approximate location access granted.
-                        Toast.makeText(this, "Şimdi izin verdin sanki!", Toast.LENGTH_SHORT).show()
-
-                        //LAST LOCATION
                         fusedLocationClient.lastLocation
                             .addOnSuccessListener { location: Location? ->
                                 // Got last known location. In some rare situations this can be null.
@@ -88,30 +85,15 @@ class MainActivity : ComponentActivity() {
                                         longitude = location.longitude.toString()
                                     )
                                 }
-                                Toast.makeText(
-                                    this,
-                                    "Last location alındı!: $location",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            .addOnFailureListener {
-                                //lookForSharedPref()
-                                Toast.makeText(
-                                    this,
-                                    "Last location alınamadı!: $it",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
                     }
                     else -> {
                         // No location access granted.
-                        //lookForSharedPref()
-                        Toast.makeText(this, "Oooo vermedin demek!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.permission_reminder, Toast.LENGTH_LONG).show()
                     }
                 }
-            }.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
+            }
         } else {
-            //LAST LOCATION
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     // Got last known location. In some rare situations this can be null.
@@ -121,10 +103,27 @@ class MainActivity : ComponentActivity() {
                             longitude = location.longitude.toString()
                         )
                     }
-                    Toast.makeText(this, "Last location alındı!: $location", Toast.LENGTH_SHORT)
-                        .show()
                 }
         }
+    }
+
+    private fun showPermissionAlert(mainActivity: MainActivity) {
+        val alertDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton(R.string.OK) { dialog, id ->
+                    permissionToAsk.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
+                }
+                setNegativeButton(R.string.cancel) { dialog, id ->
+                    Toast.makeText(mainActivity, R.string.permission_reminder, Toast.LENGTH_LONG)
+                        .show()
+                }
+                setTitle(R.string.alert_title)
+                setCancelable(false)
+            }
+            builder.create()
+        }
+        alertDialog.show()
     }
 
     private fun lookForSharedPref() {

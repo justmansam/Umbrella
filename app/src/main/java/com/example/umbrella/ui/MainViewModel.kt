@@ -32,6 +32,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
         _mainUiState.update { currentState ->
             currentState.copy(
+                isInProcess = true,
                 hasLocation = false,
                 hasSharedPref = false
             )
@@ -88,6 +89,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
                 Log.e("TAGGG ", "Check the city name you typed")
             }
+        }
+        _mainUiState.update { currentState ->
+            currentState.copy(
+                isInProcess = false
+            )
         }
     }
 
@@ -174,6 +180,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     ) {
         _mainUiState.update { currentState ->
             currentState.copy(
+                isInProcess = false,
                 city = cityFromMain!!,
                 currentTemperature = currentTempFromMain!!.toInt(),
                 feelsLikeTemperature = feelsLikeTempFromMain!!.toInt(),

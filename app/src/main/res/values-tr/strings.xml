@@ -11,4 +11,8 @@
     <string name="no_connection">Ağ bağlantısı yok!</string>
     <string name="type_city">Şehir arayın (Stockholm veya London,US)</string>
     <string name="local_time">(yerel saat)</string>
+    <string name="OK">TAMAM</string>
+    <string name="cancel">İptal</string>
+    <string name="alert_title">Uygulamanın etkin çalışması için konum izni verin!</string>
+    <string name="permission_reminder">Konum iznini telefonun ayarlar kısmından verebilirsiniz!</string>
 </resources>

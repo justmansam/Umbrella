@@ -7,6 +7,7 @@ data class MainUiState(
     val isSearchActive: Boolean = false,
     val isSearchFailed: Boolean = false,
     val hasSharedPref: Boolean = false,
+    val isInProcess: Boolean = false,
     // FOR DATA UPDATE (according to CITY or LOCATION api RESPONSE)
     val city: String = "",
     //val latitude: String = "",

@@ -11,4 +11,8 @@
     <string name="no_connection">Ingen nätverksanslutning!</string>
     <string name="type_city">Sök stad (Stockholm eller London,US)</string>
     <string name="local_time">(lokal tid)</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Avbryt</string>
+    <string name="alert_title">Ge platstillstånd för att appen ska fungera effektivt!</string>
+    <string name="permission_reminder">Du kan ge platstillstånd från telefonens inställningar!</string>
 </resources>
