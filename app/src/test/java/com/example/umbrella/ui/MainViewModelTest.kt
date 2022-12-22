@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -26,11 +26,13 @@ class MainViewModelTest {
     }
 
     @Test
-    fun mainViewModel_ResponseIsSuccessful_SharedPreferencesUpdated() = runBlocking {
-        val currentMainUiState = viewModel.mainUiState.value
-        viewModel.showApiCallResult("Stockholm", null, null)
+    fun mainViewModel_ResponseIsSuccessful_UiStateUpdated() = runBlocking {
+        viewModel.showApiCallResult(null, "59.3326", "18.0649")
 
+        delay(3000) // To let ui state updated
+
+        val currentMainUiState = viewModel.mainUiState.value
         // Assert that showApiCallResult() method updates city correctly.
-        assertFalse(currentMainUiState.city == "Stockholm")
+        assertEquals("Stockholm", currentMainUiState.city)
     }
 }
