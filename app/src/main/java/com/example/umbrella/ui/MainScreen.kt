@@ -74,55 +74,54 @@ fun MainScreen(
     if (mainUiState.isInProcess) {
         ProcessField(modifier)
     } else {
-        Column(
-            modifier = modifier
-                .padding(16.dp)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
+        Column {
             if (mainUiState.isSearchActive) {
                 SearchField(modifier, viewModel)
             }
-            Card(
+            Column(
                 modifier = modifier
-                    .weight(.50f)
-                    .fillMaxSize()
-                    .clickable { viewModel.searchActivated() },
-                shape = RoundedCornerShape(16.dp),
-                backgroundColor = MaterialTheme.colors.surface
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                ForecastField(modifier, mainUiState)
+                Spacer(modifier.size(16.dp))
+                Card(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.searchActivated() },
+                    shape = RoundedCornerShape(16.dp),
+                    backgroundColor = MaterialTheme.colors.surface
+                ) {
+                    ForecastField(modifier, mainUiState)
+                }
+                Spacer(modifier.size(16.dp))
+                Card(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    backgroundColor = MaterialTheme.colors.surface
+                ) {
+                    SecondaryInfo(modifier, mainUiState)
+                }
+                Spacer(modifier.size(16.dp))
+                Card(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    backgroundColor = MaterialTheme.colors.surface
+                ) {
+                    SunInfo(modifier, mainUiState)
+                }
+                Spacer(modifier.size(16.dp))
+                Text(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    text = stringResource(id = R.string.last_update)
+                            + " " + mainUiState.lastUpdateTime
+                            + " " + stringResource(id = R.string.local_time),
+                    fontSize = 10.sp
+                )
+                Spacer(modifier.size(16.dp))
             }
-            Spacer(modifier.size(16.dp))
-            Card(
-                modifier = modifier
-                    .weight(.28f)
-                    .fillMaxSize(),
-                shape = RoundedCornerShape(16.dp),
-                backgroundColor = MaterialTheme.colors.surface
-            ) {
-                SecondaryInfo(modifier, mainUiState)
-            }
-            Spacer(modifier.size(16.dp))
-            Card(
-                modifier = modifier
-                    .weight(.28f)
-                    .fillMaxSize(),
-                shape = RoundedCornerShape(16.dp),
-                backgroundColor = MaterialTheme.colors.surface
-            ) {
-                SunInfo(modifier, mainUiState)
-            }
-            Spacer(modifier.size(16.dp))
-            Text(
-                modifier = modifier
-                    .fillMaxSize()
-                    .weight(.05f),
-                text = stringResource(id = R.string.last_update)
-                        + " " + mainUiState.lastUpdateTime
-                        + " " + stringResource(id = R.string.local_time),
-                fontSize = 10.sp
-            )
         }
     }
 }
@@ -175,14 +174,18 @@ fun SearchField(modifier: Modifier, viewModel: MainViewModel) {
         ),
         maxLines = 1
     )
-    Spacer(modifier.size(16.dp))
 }
 
 @Composable
 fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
     Column(
         modifier = modifier
-            .padding(16.dp)
+            .padding(
+                top = 16.dp,
+                bottom = 20.dp,
+                start = 16.dp,
+                end = 16.dp
+            )
             .fillMaxSize()
     ) {
         Row(modifier = modifier.fillMaxSize()) {
@@ -194,7 +197,7 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
             ) {
                 Text(
                     text = mainUiState.currentTemperature.toString() + "\u00B0",
-                    fontSize = 84.sp,
+                    fontSize = 96.sp,
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -204,14 +207,14 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier.size(4.dp))
+                Spacer(modifier.size(6.dp))
                 Text(
                     text = stringResource(id = R.string.feels_like) + " " + mainUiState.feelsLikeTemperature.toString() + "\u00B0",
                     fontSize = 16.sp,
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier.size(2.dp))
+                Spacer(modifier.size(3.dp))
                 Text(
                     text = "Min " + mainUiState.minTemperature.toString() + "\u00B0 / Max " + mainUiState.maxTemperature.toString() + "°",
                     fontSize = 16.sp,
@@ -299,7 +302,7 @@ fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
 fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
     Row(
         modifier = modifier
-            .padding(16.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxSize()
     ) {
         Column(
