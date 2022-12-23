@@ -176,9 +176,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
     }
 
-    fun exposeLocalData(
-        sharedPrefDataToExpose: Array<String?>
-    ) {
+    fun exposeLocalData(sharedPrefDataToExpose: Array<String?>) {
         _mainUiState.update { currentState ->
             currentState.copy(
                 city = sharedPrefDataToExpose[0]!!,

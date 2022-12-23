@@ -128,42 +128,23 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun lookForSharedPref() {
-        val storedCity = sharedPrefImpl.getValue(citySP)
-        val storedCurrentTemp = sharedPrefImpl.getValue(currentTempSP)
-        val storedFeelsLikeTemp = sharedPrefImpl.getValue(feelsLikeTempSP)
-        val storedMinTemp = sharedPrefImpl.getValue(minTempSP)
-        val storedMaxTemp = sharedPrefImpl.getValue(maxTempSP)
-        val storedVisibility = sharedPrefImpl.getValue(visibilitySP)
-        val storedHumidity = sharedPrefImpl.getValue(humiditySP)
-        val storedWind = sharedPrefImpl.getValue(windSP)
-        val storedSunrise = sharedPrefImpl.getValue(sunriseSP)
-        val storedSunset = sharedPrefImpl.getValue(sunsetSP)
-        val storedLastUpdateTime = sharedPrefImpl.getValue(lastUpdateTimeSP)
-
-        if (storedCity != null && storedCurrentTemp != null && storedLastUpdateTime != null) {
-            setScreenContent(
-                arrayOf(
-                    storedCity,
-                    storedCurrentTemp,
-                    storedFeelsLikeTemp,
-                    storedMinTemp,
-                    storedMaxTemp,
-                    storedVisibility,
-                    storedHumidity,
-                    storedWind,
-                    storedSunrise,
-                    storedSunset,
-                    storedLastUpdateTime
-                )
-            )
-        } else {
-            setScreenContent(arrayOf())
-        }
+        val sharedPrefArray = arrayOf(
+            sharedPrefImpl.getValue(citySP),
+            sharedPrefImpl.getValue(currentTempSP),
+            sharedPrefImpl.getValue(feelsLikeTempSP),
+            sharedPrefImpl.getValue(minTempSP),
+            sharedPrefImpl.getValue(maxTempSP),
+            sharedPrefImpl.getValue(visibilitySP),
+            sharedPrefImpl.getValue(humiditySP),
+            sharedPrefImpl.getValue(windSP),
+            sharedPrefImpl.getValue(sunriseSP),
+            sharedPrefImpl.getValue(sunsetSP),
+            sharedPrefImpl.getValue(lastUpdateTimeSP)
+        )
+        setScreenContent(sharedPrefArray)
     }
 
-    private fun setScreenContent(
-        screenContentArray: Array<String?>
-    ) {
+    private fun setScreenContent(screenContentArray: Array<String?>) {
         setContent {
             UmbrellaTheme {
                 Surface(
