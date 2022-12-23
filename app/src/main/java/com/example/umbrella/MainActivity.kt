@@ -81,8 +81,10 @@ class MainActivity : ComponentActivity() {
                                 // Got last known location. In some rare situations this can be null.
                                 if (location != null) {
                                     setScreenContent(
-                                        latitude = location.latitude.toString(),
-                                        longitude = location.longitude.toString()
+                                        arrayOf(
+                                            location.latitude.toString(),
+                                            location.longitude.toString()
+                                        )
                                     )
                                 }
                             }
@@ -99,8 +101,7 @@ class MainActivity : ComponentActivity() {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         setScreenContent(
-                            latitude = location.latitude.toString(),
-                            longitude = location.longitude.toString()
+                            arrayOf(location.latitude.toString(), location.longitude.toString())
                         )
                     }
                 }
@@ -141,39 +142,27 @@ class MainActivity : ComponentActivity() {
 
         if (storedCity != null && storedCurrentTemp != null && storedLastUpdateTime != null) {
             setScreenContent(
-                storedCity,
-                null,
-                null,
-                storedCurrentTemp,
-                storedFeelsLikeTemp,
-                storedMinTemp,
-                storedMaxTemp,
-                storedVisibility,
-                storedHumidity,
-                storedWind,
-                storedSunrise,
-                storedSunset,
-                storedLastUpdateTime
+                arrayOf(
+                    storedCity,
+                    storedCurrentTemp,
+                    storedFeelsLikeTemp,
+                    storedMinTemp,
+                    storedMaxTemp,
+                    storedVisibility,
+                    storedHumidity,
+                    storedWind,
+                    storedSunrise,
+                    storedSunset,
+                    storedLastUpdateTime
+                )
             )
         } else {
-            setScreenContent()
+            setScreenContent(arrayOf())
         }
     }
 
     private fun setScreenContent(
-        city: String? = null,
-        latitude: String? = null,
-        longitude: String? = null,
-        currentTemp: String? = null,
-        feelsLikeTemp: String? = null,
-        minTemp: String? = null,
-        maxTemp: String? = null,
-        visibility: String? = null,
-        humidity: String? = null,
-        wind: String? = null,
-        sunrise: String? = null,
-        sunset: String? = null,
-        lastUpdateTime: String? = null
+        screenContentArray: Array<String?>
     ) {
         setContent {
             UmbrellaTheme {
@@ -182,19 +171,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     MainScreen(
-                        city,
-                        latitude,
-                        longitude,
-                        currentTemp,
-                        feelsLikeTemp,
-                        minTemp,
-                        maxTemp,
-                        visibility,
-                        humidity,
-                        wind,
-                        sunrise,
-                        sunset,
-                        lastUpdateTime
+                        screenContentArray
                     )
                 }
             }

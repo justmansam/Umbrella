@@ -177,31 +177,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun exposeLocalData(
-        cityFromMain: String?,
-        currentTempFromMain: String?,
-        feelsLikeTempFromMain: String?,
-        minTempFromMain: String?,
-        maxTempFromMain: String?,
-        visibilityFromMain: String?,
-        humidityFromMain: String?,
-        windFromMain: String?,
-        sunriseFromMain: String?,
-        sunsetFromMain: String?,
-        lastUpdateTimeFromMain: String?
+        sharedPrefDataToExpose: Array<String?>
     ) {
         _mainUiState.update { currentState ->
             currentState.copy(
-                city = cityFromMain!!,
-                currentTemperature = currentTempFromMain!!.toInt(),
-                feelsLikeTemperature = feelsLikeTempFromMain!!.toInt(),
-                minTemperature = minTempFromMain!!.toInt(),
-                maxTemperature = maxTempFromMain!!.toInt(),
-                visibility = visibilityFromMain!!.toInt(),
-                humidity = humidityFromMain!!.toInt(),
-                wind = windFromMain!!.toInt(),
-                sunrise = sunriseFromMain!!,
-                sunset = sunsetFromMain!!,
-                lastUpdateTime = lastUpdateTimeFromMain!!,
+                city = sharedPrefDataToExpose[0]!!,
+                currentTemperature = sharedPrefDataToExpose[1]!!.toInt(),
+                feelsLikeTemperature = sharedPrefDataToExpose[2]!!.toInt(),
+                minTemperature = sharedPrefDataToExpose[3]!!.toInt(),
+                maxTemperature = sharedPrefDataToExpose[4]!!.toInt(),
+                visibility = sharedPrefDataToExpose[5]!!.toInt(),
+                humidity = sharedPrefDataToExpose[6]!!.toInt(),
+                wind = sharedPrefDataToExpose[7]!!.toInt(),
+                sunrise = sharedPrefDataToExpose[8]!!,
+                sunset = sharedPrefDataToExpose[9]!!,
+                lastUpdateTime = sharedPrefDataToExpose[10]!!,
                 hasSharedPref = true
             )
         }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,44 +25,23 @@ import com.example.umbrella.R
 
 @Composable
 fun MainScreen(
-    cityFromMain: String?,
-    latitudeFromMain: String?,
-    longitudeFromMain: String?,
-    currentTempFromMain: String?,
-    feelsLikeTempFromMain: String?,
-    minTempFromMain: String?,
-    maxTempFromMain: String?,
-    visibilityFromMain: String?,
-    humidityFromMain: String?,
-    windFromMain: String?,
-    sunriseFromMain: String?,
-    sunsetFromMain: String?,
-    lastUpdateTimeFromMain: String?,
+    screenContentArray: Array<String?>,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val mainUiState by viewModel.mainUiState.collectAsState()
 
     // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
-    if (!mainUiState.hasSharedPref && cityFromMain != null && currentTempFromMain != null && lastUpdateTimeFromMain != null) {
-        viewModel.exposeLocalData(
-            cityFromMain,
-            currentTempFromMain,
-            feelsLikeTempFromMain,
-            minTempFromMain,
-            maxTempFromMain,
-            visibilityFromMain,
-            humidityFromMain,
-            windFromMain,
-            sunriseFromMain,
-            sunsetFromMain,
-            lastUpdateTimeFromMain
-        )
+    if (!mainUiState.hasSharedPref && screenContentArray.size > 3) {
+        viewModel.exposeLocalData(screenContentArray)
     }
 
-    // TO Show weather accordingly if user gave location permission on app start (for once in case of recomposition)!
-    if (!mainUiState.apiHasResponse && latitudeFromMain != null && longitudeFromMain != null) {
-        viewModel.showApiCallResult(null, latitudeFromMain, longitudeFromMain)
+    /*
+    TO Show weather accordingly if user gave location permission
+    (latitude and longitude) on app start (for once in case of recomposition)!
+     */
+    if (!mainUiState.apiHasResponse && screenContentArray.size < 4) {
+        viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
     }
 
     // TO Show search bar if user landed for the first time or still didn't give location permission!
@@ -71,47 +50,54 @@ fun MainScreen(
     }
 
     // MAIN SCREEN
-    if (mainUiState.isInProcess) {
-        ProcessField(modifier)
-    } else {
-        Column {
-            if (mainUiState.isSearchActive) {
-                SearchField(modifier, viewModel)
-            }
-            Column(
+    Column {
+        if (mainUiState.isSearchActive) {
+            SearchField(modifier, viewModel)
+        }
+        Column(
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier.size(16.dp))
+            Card(
                 modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .clickable { viewModel.searchActivated() },
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
             ) {
-                Spacer(modifier.size(16.dp))
-                Card(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.searchActivated() },
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colors.surface
-                ) {
-                    ForecastField(modifier, mainUiState)
-                }
-                Spacer(modifier.size(16.dp))
-                Card(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colors.surface
-                ) {
-                    SecondaryInfo(modifier, mainUiState)
-                }
-                Spacer(modifier.size(16.dp))
-                Card(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colors.surface
-                ) {
-                    SunInfo(modifier, mainUiState)
-                }
-                Spacer(modifier.size(16.dp))
+                if (mainUiState.isInProcess) ProcessField(modifier) else ForecastField(
+                    modifier,
+                    mainUiState
+                )
+            }
+            Spacer(modifier.size(16.dp))
+            Card(
+                modifier = modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
+            ) {
+                if (mainUiState.isInProcess) ProcessField(modifier) else SecondaryInfo(
+                    modifier,
+                    mainUiState
+                )
+            }
+            Spacer(modifier.size(16.dp))
+            Card(
+                modifier = modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface
+            ) {
+                if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(
+                    modifier,
+                    mainUiState
+                )
+            }
+            Spacer(modifier.size(16.dp))
+            if (!mainUiState.isInProcess) {
                 Text(
                     modifier = modifier
                         .fillMaxWidth(),
@@ -120,37 +106,22 @@ fun MainScreen(
                             + " " + stringResource(id = R.string.local_time),
                     fontSize = 10.sp
                 )
-                Spacer(modifier.size(16.dp))
             }
+            Spacer(modifier.size(16.dp))
         }
     }
 }
 
 @Composable
 fun ProcessField(modifier: Modifier) {
-    Column(
+    Box(
         modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize()
+            .size(200.dp)
     ) {
         CircularProgressIndicator(
             modifier = modifier
-                .weight(.48f)
                 .size(64.dp)
-                .align(CenterHorizontally)
-                .padding(top = 32.dp)
-        )
-        CircularProgressIndicator(
-            modifier = modifier
-                .weight(.24f)
-                .size(64.dp)
-                .align(CenterHorizontally)
-        )
-        CircularProgressIndicator(
-            modifier = modifier
-                .weight(.24f)
-                .size(64.dp)
-                .align(CenterHorizontally)
+                .align(Center)
         )
     }
 }
@@ -182,8 +153,8 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
         modifier = modifier
             .padding(
                 top = 16.dp,
-                bottom = 20.dp,
-                start = 16.dp,
+                bottom = 24.dp,
+                start = 24.dp,
                 end = 16.dp
             )
             .fillMaxSize()
@@ -191,43 +162,46 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
         Row(modifier = modifier.fillMaxSize()) {
             Column(
                 modifier = modifier
-                    .weight(.6f)
+                    .weight(.65f)
                     .align(CenterVertically),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = mainUiState.currentTemperature.toString() + "\u00B0",
-                    fontSize = 96.sp,
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    fontSize = 84.sp,
+                    modifier = modifier.fillMaxWidth()
                 )
                 Text(
                     text = mainUiState.city,
                     fontSize = 32.sp,
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    modifier = modifier.fillMaxWidth()
                 )
                 Spacer(modifier.size(6.dp))
                 Text(
-                    text = stringResource(id = R.string.feels_like) + " " + mainUiState.feelsLikeTemperature.toString() + "\u00B0",
+                    text = stringResource(id = R.string.feels_like)
+                            + " "
+                            + mainUiState.feelsLikeTemperature.toString()
+                            + "\u00B0",
                     fontSize = 16.sp,
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    modifier = modifier.fillMaxWidth()
                 )
                 Spacer(modifier.size(3.dp))
                 Text(
-                    text = "Min " + mainUiState.minTemperature.toString() + "\u00B0 / Max " + mainUiState.maxTemperature.toString() + "°",
+                    text = "Min "
+                            + mainUiState.minTemperature.toString()
+                            + "\u00B0 / Max "
+                            + mainUiState.maxTemperature.toString()
+                            + "°",
                     fontSize = 16.sp,
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    modifier = modifier.fillMaxWidth()
                 )
             }
             Spacer(modifier.size(8.dp))
             Image(
                 modifier = modifier
-                    .weight(.4f)
-                    .size(156.dp)
-                    .padding(top = 8.dp),
+                    .weight(.35f)
+                    .fillMaxSize()
+                    .padding(top = 16.dp),
                 painter = painterResource(id = R.drawable.defaultw),
                 contentDescription = ""
             )
