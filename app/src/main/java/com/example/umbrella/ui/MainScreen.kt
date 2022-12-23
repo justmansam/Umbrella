@@ -31,17 +31,18 @@ fun MainScreen(
 ) {
     val mainUiState by viewModel.mainUiState.collectAsState()
 
-    // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
-    if (!mainUiState.hasSharedPref && screenContentArray.size > 3) {
-        viewModel.exposeLocalData(screenContentArray)
-    }
-
-    /*
-    TO Show weather accordingly if user gave location permission
-    (latitude and longitude) on app start (for once in case of recomposition)!
-     */
-    if (!mainUiState.apiHasResponse && screenContentArray.size < 4) {
-        viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
+    if (!screenContentArray[0].isNullOrEmpty()) {
+        // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
+        if (!mainUiState.hasSharedPref && screenContentArray.size > 3) {
+            viewModel.exposeLocalData(screenContentArray)
+        }
+        /*
+        TO Show weather accordingly if user gave location permission
+        (latitude and longitude) on app start (for once in case of recomposition)!
+         */
+        if (!mainUiState.apiHasResponse && (screenContentArray.size in 1..3)) {
+            viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
+        }
     }
 
     // TO Show search bar if user landed for the first time or still didn't give location permission!
@@ -213,61 +214,96 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
 fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
     Row(
         modifier = modifier
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
             .fillMaxSize()
     ) {
         Column(
             modifier = modifier
+                .fillMaxSize()
                 .weight(1f)
-                .align(CenterVertically)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_visibility),
-                contentDescription = "",
-                modifier.size(48.dp)
+            Box(modifier = modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_visibility),
+                    contentDescription = "",
+                    modifier
+                        .size(48.dp)
+                        .padding(bottom = 8.dp)
+                        .align(Center)
+                )
+            }
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = stringResource(id = R.string.visibility),
+                textAlign = TextAlign.Center
             )
-            Text(text = stringResource(id = R.string.visibility))
-            Text(text = mainUiState.visibility.toString() + " %")
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = mainUiState.visibility.toString() + " %",
+                textAlign = TextAlign.Center
+            )
         }
-        Spacer(modifier.size(4.dp))
         Divider(
             modifier
                 .size(2.dp, 96.dp)
                 .align(CenterVertically)
         )
-        Spacer(modifier.size(4.dp))
         Column(
             modifier = modifier
+                .fillMaxSize()
                 .weight(1f)
-                .align(CenterVertically)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_humidity),
-                contentDescription = "",
-                modifier.size(48.dp)
+            Box(modifier = modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_humidity),
+                    contentDescription = "",
+                    modifier
+                        .size(48.dp)
+                        .padding(bottom = 8.dp)
+                        .align(Center)
+                )
+            }
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = stringResource(id = R.string.humidity),
+                textAlign = TextAlign.Center
             )
-            Text(text = stringResource(id = R.string.humidity))
-            Text(text = mainUiState.humidity.toString() + " %")
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = mainUiState.humidity.toString() + " %",
+                textAlign = TextAlign.Center
+            )
         }
-        Spacer(modifier.size(4.dp))
         Divider(
             modifier
                 .size(2.dp, 96.dp)
                 .align(CenterVertically)
         )
-        Spacer(modifier.size(4.dp))
         Column(
             modifier = modifier
+                .fillMaxSize()
                 .weight(1f)
-                .align(CenterVertically)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_wind),
-                contentDescription = "",
-                modifier.size(48.dp)
+            Box(modifier = modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_wind),
+                    contentDescription = "",
+                    modifier
+                        .size(48.dp)
+                        .padding(bottom = 8.dp)
+                        .align(Center)
+                )
+            }
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = stringResource(id = R.string.wind),
+                textAlign = TextAlign.Center
             )
-            Text(text = stringResource(id = R.string.wind))
-            Text(text = mainUiState.wind.toString() + " km/h")
+            Text(
+                modifier = modifier.fillMaxSize(),
+                text = mainUiState.wind.toString() + " km/h",
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -294,11 +330,15 @@ fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
                 modifier = modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-            Image(
-                painter = painterResource(id = R.drawable.ic_sunrise),
-                contentDescription = "",
-                modifier.size(86.dp)
-            )
+            Box(modifier = modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_sunrise),
+                    contentDescription = "",
+                    modifier
+                        .size(86.dp)
+                        .align(Center)
+                )
+            }
         }
         Spacer(modifier.size(8.dp))
         Column(
@@ -318,13 +358,15 @@ fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
                 modifier = modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-            Image(
-                painter = painterResource(id = R.drawable.ic_sunset),
-                contentDescription = "",
-                modifier = modifier
-                    .size(86.dp)
-                    .fillMaxWidth()
-            )
+            Box(modifier = modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_sunset),
+                    contentDescription = "",
+                    modifier = modifier
+                        .size(86.dp)
+                        .align(Center)
+                )
+            }
         }
     }
 }
