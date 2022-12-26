@@ -32,6 +32,7 @@ import com.example.umbrella.ui.MainViewModel.Companion.minTempSP
 import com.example.umbrella.ui.MainViewModel.Companion.sunriseSP
 import com.example.umbrella.ui.MainViewModel.Companion.sunsetSP
 import com.example.umbrella.ui.MainViewModel.Companion.visibilitySP
+import com.example.umbrella.ui.MainViewModel.Companion.weatherIconSP
 import com.example.umbrella.ui.MainViewModel.Companion.windSP
 import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -139,7 +140,8 @@ class MainActivity : ComponentActivity() {
             sharedPrefImpl.getValue(windSP),
             sharedPrefImpl.getValue(sunriseSP),
             sharedPrefImpl.getValue(sunsetSP),
-            sharedPrefImpl.getValue(lastUpdateTimeSP)
+            sharedPrefImpl.getValue(lastUpdateTimeSP),
+            sharedPrefImpl.getValue(weatherIconSP)
         )
         setScreenContent(sharedPrefArray)
     }

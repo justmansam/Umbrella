@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.api.RetrofitInstance
 import com.example.umbrella.api.WeatherDataItem
+import com.example.umbrella.common.toUTCformatedLocalTime
 import com.example.umbrella.sharedPrefImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,9 +115,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 visibility = response.body()!!.visibility / 100,
                 humidity = response.body()!!.main.humidity,
                 wind = response.body()!!.wind.speed.toInt(),
-                sunrise = calculateLocalTime(response, response.body()!!.sys.sunrise, true),
-                sunset = calculateLocalTime(response, response.body()!!.sys.sunset, true),
-                lastUpdateTime = calculateLocalTime(response, response.body()!!.dt, false)
+                sunrise = (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
+                sunset = (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
+                lastUpdateTime = (response.body()!!.dt).toUTCformatedLocalTime(response, false),
+                weatherIcon = response.body()!!.weather[0].icon
             )
         }
         _mainUiState.update { currentState ->
@@ -125,31 +127,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
             )
         }
         updateSharedPreferences()
-    }
-
-    private fun calculateLocalTime(
-        response: Response<WeatherDataItem>,
-        dateAndTimeInUnix: Int,
-        returnOnlyHour: Boolean
-    ): String {
-        val timeZone = response.body()!!.timezone
-        val timeDifference = timeZone / 3600
-        val dateAndTimeRaw = java.time.format.DateTimeFormatter.ISO_INSTANT
-            .format(java.time.Instant.ofEpochSecond(dateAndTimeInUnix.toLong()))
-        val dateAndTimeStringList = dateAndTimeRaw.split("T")
-        val hourAndMinuteStringList = dateAndTimeStringList[1].split(":").dropLast(1)
-        val hour = hourAndMinuteStringList[0].toInt() + timeDifference
-        val hourString = if (hour < 10) {
-            "0"
-        } else {
-            ""
-        } + hour.toString() + ":" + hourAndMinuteStringList[1]
-        return if (returnOnlyHour) {
-            hourString
-        } else {
-            val dateString = dateAndTimeStringList[0] + " " + hourString
-            dateString
-        }
     }
 
     private fun updateSharedPreferences() {
@@ -168,6 +145,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             sharedPrefImpl.setValue(sunriseSP, mainUiState.value.sunrise)
             sharedPrefImpl.setValue(sunsetSP, mainUiState.value.sunset)
             sharedPrefImpl.setValue(lastUpdateTimeSP, mainUiState.value.lastUpdateTime)
+            sharedPrefImpl.setValue(weatherIconSP, mainUiState.value.weatherIcon)
         }
         _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
     }
@@ -190,6 +168,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 sunrise = sharedPrefDataToExpose[8]!!,
                 sunset = sharedPrefDataToExpose[9]!!,
                 lastUpdateTime = sharedPrefDataToExpose[10]!!,
+                weatherIcon = sharedPrefDataToExpose[11]!!,
                 hasSharedPref = true
             )
         }
@@ -210,5 +189,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         const val sunriseSP = "sunrise"
         const val sunsetSP = "sunset"
         const val lastUpdateTimeSP = "lastUpdateTime"
+        const val weatherIconSP = "weatherIcon"
     }
 }

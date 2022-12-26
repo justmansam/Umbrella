@@ -22,14 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.umbrella.R
+import com.example.umbrella.common.mapToDrawableResource
 
 @Composable
 fun MainScreen(
     screenContentArray: Array<String?>,
-    modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val mainUiState by viewModel.mainUiState.collectAsState()
+    val modifier: Modifier = Modifier
 
     if (!screenContentArray[0].isNullOrEmpty()) {
         // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
@@ -68,10 +69,7 @@ fun MainScreen(
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
-                if (mainUiState.isInProcess) ProcessField(modifier) else ForecastField(
-                    modifier,
-                    mainUiState
-                )
+                if (mainUiState.isInProcess) ProcessField(modifier) else ForecastField(modifier, mainUiState)
             }
             Spacer(modifier.size(16.dp))
             Card(
@@ -80,10 +78,7 @@ fun MainScreen(
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
-                if (mainUiState.isInProcess) ProcessField(modifier) else SecondaryInfo(
-                    modifier,
-                    mainUiState
-                )
+                if (mainUiState.isInProcess) ProcessField(modifier) else SecondaryInfo(modifier, mainUiState)
             }
             Spacer(modifier.size(16.dp))
             Card(
@@ -92,10 +87,7 @@ fun MainScreen(
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface
             ) {
-                if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(
-                    modifier,
-                    mainUiState
-                )
+                if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(modifier, mainUiState)
             }
             Spacer(modifier.size(16.dp))
             if (!mainUiState.isInProcess) {
@@ -172,12 +164,13 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
                     fontSize = 84.sp,
                     modifier = modifier.fillMaxWidth()
                 )
+                Spacer(modifier.size(4.dp))
                 Text(
                     text = mainUiState.city,
                     fontSize = 32.sp,
                     modifier = modifier.fillMaxWidth()
                 )
-                Spacer(modifier.size(6.dp))
+                Spacer(modifier.size(8.dp))
                 Text(
                     text = stringResource(id = R.string.feels_like)
                             + " "
@@ -203,7 +196,7 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
                     .weight(.35f)
                     .fillMaxSize()
                     .padding(top = 16.dp),
-                painter = painterResource(id = R.drawable.defaultw),
+                painter = painterResource((mainUiState.weatherIcon).mapToDrawableResource()),
                 contentDescription = ""
             )
         }
@@ -214,7 +207,7 @@ fun ForecastField(modifier: Modifier, mainUiState: MainUiState) {
 fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
     Row(
         modifier = modifier
-            .padding(vertical = 16.dp)
+            .padding(vertical = 20.dp)
             .fillMaxSize()
     ) {
         Column(
@@ -228,7 +221,7 @@ fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
                     contentDescription = "",
                     modifier
                         .size(48.dp)
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 16.dp)
                         .align(Center)
                 )
             }
@@ -259,7 +252,7 @@ fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
                     contentDescription = "",
                     modifier
                         .size(48.dp)
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 16.dp)
                         .align(Center)
                 )
             }
@@ -290,7 +283,7 @@ fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
                     contentDescription = "",
                     modifier
                         .size(48.dp)
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 16.dp)
                         .align(Center)
                 )
             }
@@ -312,7 +305,7 @@ fun SecondaryInfo(modifier: Modifier, mainUiState: MainUiState) {
 fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
     Row(
         modifier = modifier
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            .padding(top = 20.dp, start = 16.dp, end = 16.dp)
             .fillMaxSize()
     ) {
         Column(

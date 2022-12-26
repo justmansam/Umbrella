@@ -21,5 +21,6 @@ data class MainUiState(
     val wind: Int = 0,
     val sunrise: String = "00:00",
     val sunset: String = "00:00",
-    val lastUpdateTime: String = "00:00"
+    val lastUpdateTime: String = "00:00",
+    val weatherIcon: String = "*"
 )
