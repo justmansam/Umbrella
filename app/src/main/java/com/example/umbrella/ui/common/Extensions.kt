@@ -1,8 +1,8 @@
-package com.example.umbrella.common
+package com.example.umbrella.ui.common
 
 import androidx.annotation.DrawableRes
 import com.example.umbrella.R
-import com.example.umbrella.api.WeatherDataItem
+import com.example.umbrella.data.remote.api.WeatherDataItem
 import retrofit2.Response
 
 fun Int.toUTCformatedLocalTime(

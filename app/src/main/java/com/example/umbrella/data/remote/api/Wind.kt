@@ -1,4 +1,4 @@
-package com.example.umbrella.api
+package com.example.umbrella.data.remote.api
 
 data class Wind(
     val deg: Int,

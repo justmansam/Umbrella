@@ -1,4 +1,4 @@
-package com.example.umbrella.ui
+package com.example.umbrella.ui.main
 
 data class MainUiState(
     // FOR GENERAL UI STATE MANAGEMENT

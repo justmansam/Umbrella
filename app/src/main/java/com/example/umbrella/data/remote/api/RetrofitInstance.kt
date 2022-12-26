@@ -1,4 +1,4 @@
-package com.example.umbrella.api
+package com.example.umbrella.data.remote.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory

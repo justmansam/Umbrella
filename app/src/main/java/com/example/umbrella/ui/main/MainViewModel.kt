@@ -1,10 +1,10 @@
-package com.example.umbrella.ui
+package com.example.umbrella.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.umbrella.api.RetrofitInstance
-import com.example.umbrella.api.WeatherDataItem
-import com.example.umbrella.common.toUTCformatedLocalTime
+import com.example.umbrella.data.remote.api.RetrofitInstance
+import com.example.umbrella.data.remote.api.WeatherDataItem
+import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import com.example.umbrella.sharedPrefImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

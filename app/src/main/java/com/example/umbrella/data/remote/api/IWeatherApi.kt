@@ -1,4 +1,4 @@
-package com.example.umbrella.api
+package com.example.umbrella.data.remote.api
 
 import retrofit2.Response
 import retrofit2.http.GET

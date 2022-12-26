@@ -1,4 +1,4 @@
-package com.example.umbrella.api
+package com.example.umbrella.data.remote.api
 
 data class Main(
     val feels_like: Double,

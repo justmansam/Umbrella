@@ -2,6 +2,7 @@ package com.example.umbrella.ui
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import com.example.umbrella.ui.main.MainScreen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

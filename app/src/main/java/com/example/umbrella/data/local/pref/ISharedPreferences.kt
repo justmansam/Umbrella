@@ -1,4 +1,4 @@
-package com.example.umbrella.pref
+package com.example.umbrella.data.local.pref
 
 interface ISharedPreferences {
     fun setValue(key: String, value: String)

@@ -1,5 +1,6 @@
 package com.example.umbrella.ui
 
+import com.example.umbrella.ui.main.MainViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain

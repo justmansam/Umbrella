@@ -1,15 +1,9 @@
-package com.example.umbrella.api
+package com.example.umbrella.data.remote.api
 
 data class WeatherDataItem(
-    val base: String,
-    val clouds: Clouds,
-    val cod: Int,
-    val coord: Coord,
     val dt: Int,
-    val id: Int,
     val main: Main,
     val name: String,
-    val rain: Rain,
     val sys: Sys,
     val timezone: Int,
     val visibility: Int,

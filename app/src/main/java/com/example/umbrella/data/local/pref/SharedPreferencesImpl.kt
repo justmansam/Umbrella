@@ -1,4 +1,4 @@
-package com.example.umbrella.pref
+package com.example.umbrella.data.local.pref
 
 import android.content.SharedPreferences
 import javax.inject.Inject
