@@ -20,11 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
-    /*
-    Compose state yerine bunun kullanılmasının sebebi app termination durumuna karşı
-    SaveStateHandle ile daha verimli çalışması ve compose free olması (reusable with xml)
-     */
-    //var tempr: Double by mutableStateOf(0.0) //COMPOSE STATE as an alternative
     // Main UI state
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
