@@ -46,12 +46,12 @@ lateinit var permissionToAsk: ActivityResultLauncher<Array<String>>
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launchWhenCreated {
-            checkConnection()
-        }
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         sharedPrefImpl = SharedPreferencesImpl(sharedPref)
         lookForSharedPref()
+        lifecycleScope.launchWhenCreated {
+            checkConnection()
+        }
         checkPermissionAndGetLocation()
     }
 
