@@ -15,4 +15,7 @@
     <string name="cancel">İptal</string>
     <string name="alert_title">Uygulamanın etkin çalışması için konum izni verin!</string>
     <string name="permission_reminder">Konum iznini telefonun ayarlar kısmından verebilirsiniz!</string>
+    <string name="search_error_typo">Arama hatası: Girdiğiniz şehir adını kontrol edin!</string>
+    <string name="search_error_connection">Bağlantı hatası: Ağ bağlantınızı kontrol edin!</string>
+    <string name="search_error_unexpected">Beklenmeyen hata: Tekrar deneyin!</string>
 </resources>

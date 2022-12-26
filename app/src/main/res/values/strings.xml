@@ -14,4 +14,7 @@
     <string name="cancel">Cancel</string>
     <string name="alert_title">Give location permission for the app to work effectively!</string>
     <string name="permission_reminder">You can give the location permission from the phone\'s settings!</string>
+    <string name="search_error_typo">Search Error: Please check the city name you typed!</string>
+    <string name="search_error_connection">Connection Error: Please check network connection!</string>
+    <string name="search_error_unexpected">Unexpected Error: Please try again!</string>
 </resources>

@@ -15,4 +15,7 @@
     <string name="cancel">Avbryt</string>
     <string name="alert_title">Ge platstillstånd för att appen ska fungera effektivt!</string>
     <string name="permission_reminder">Du kan ge platstillstånd från telefonens inställningar!</string>
+    <string name="search_error_typo">Sökfel: Kontrollera stadens namn du skrev!</string>
+    <string name="search_error_connection">Anslutningsfel: Kontrollera nätverksanslutningen!</string>
+    <string name="search_error_unexpected">Oväntat fel: Försök igen!</string>
 </resources>

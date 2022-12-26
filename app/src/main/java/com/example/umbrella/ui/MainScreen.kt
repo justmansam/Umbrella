@@ -32,7 +32,13 @@ fun MainScreen(
     val mainUiState by viewModel.mainUiState.collectAsState()
     val modifier: Modifier = Modifier
 
-    if (!screenContentArray[0].isNullOrEmpty()) {
+    // TO FORCE Show search bar if user landed for the first time or still didn't give location permission!
+    if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive && mainUiState.isSearchFailed == 0) {
+        viewModel.searchActivated()
+    }
+
+    // TO Avoid unnecessary recomposition which removes search error message!
+    if (!screenContentArray[0].isNullOrEmpty() && mainUiState.isSearchFailed == 0) {
         // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
         if (!mainUiState.hasSharedPref && screenContentArray.size > 3) {
             viewModel.exposeLocalData(screenContentArray)
@@ -46,15 +52,10 @@ fun MainScreen(
         }
     }
 
-    // TO Show search bar if user landed for the first time or still didn't give location permission!
-    if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive) {
-        viewModel.searchActivated()
-    }
-
     // MAIN SCREEN
     Column {
         if (mainUiState.isSearchActive) {
-            SearchField(modifier, viewModel)
+            SearchField(modifier, viewModel, mainUiState)
         }
         Column(
             modifier = modifier
@@ -120,24 +121,41 @@ fun ProcessField(modifier: Modifier) {
 }
 
 @Composable
-fun SearchField(modifier: Modifier, viewModel: MainViewModel) {
-    var cityForSearch by remember {
-        mutableStateOf("")
+fun SearchField(modifier: Modifier, viewModel: MainViewModel, mainUiState: MainUiState) {
+    var cityForSearch by remember { mutableStateOf("") }
+    Column {
+        TextField(
+            modifier = modifier.fillMaxWidth(),
+            value = cityForSearch,
+            onValueChange = { cityForSearch = it },
+            label = { Text(stringResource(id = R.string.type_city)) },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    viewModel.showApiCallResult(cityForSearch, null, null)
+                    cityForSearch = ""
+                }
+            ),
+            maxLines = 1
+        )
+        when (mainUiState.isSearchFailed) {
+            1 -> Text(
+                modifier = modifier.padding(16.dp),
+                text = stringResource(id = R.string.search_error_typo)
+            )
+            2 -> Text(
+                modifier = modifier.padding(16.dp),
+                text = stringResource(id = R.string.search_error_connection)
+            )
+            3 -> Text(
+                modifier = modifier.padding(16.dp),
+                text = stringResource(id = R.string.search_error_unexpected)
+            )
+        }
     }
-    TextField(
-        modifier = modifier.fillMaxWidth(),
-        value = cityForSearch,
-        onValueChange = { cityForSearch = it },
-        label = { Text(stringResource(id = R.string.type_city)) },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Search
-        ),
-        keyboardActions = KeyboardActions(
-            onSearch = { viewModel.showApiCallResult(cityForSearch, null, null) }
-        ),
-        maxLines = 1
-    )
 }
 
 @Composable

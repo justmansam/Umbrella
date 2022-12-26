@@ -1,6 +1,5 @@
 package com.example.umbrella.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.api.RetrofitInstance
@@ -61,19 +60,20 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     }
                 }
             } catch (e: IOException) {
-                // CHECK INTERNET
-                Log.e("TAGGG ", "IOExeption, check your connection")
                 _mainUiState.update { currentState ->
                     currentState.copy(
+                        isSearchFailed = 2,
+                        isSearchActive = true,
                         apiHasResponse = false,
                         isInProcess = false
                     )
                 }
                 return@launch
             } catch (e: HttpException) {
-                Log.e("TAGGG ", "HttpException, unexpected response")
                 _mainUiState.update { currentState ->
                     currentState.copy(
+                        isSearchFailed = 3,
+                        isSearchActive = true,
                         apiHasResponse = false,
                         isInProcess = false
                     )
@@ -86,20 +86,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     currentState.copy(
                         apiHasResponse = true,
                         isSearchActive = false,
-                        isSearchFailed = false
+                        isSearchFailed = 0
                     )
                 }
             } else {
-                // Check for typo for city name you typed!
                 _mainUiState.update { currentState ->
                     currentState.copy(
+                        isSearchFailed = 1,
+                        isSearchActive = true,
                         isInProcess = false,
                         apiHasResponse = false,
-                        isSearchActive = true,
-                        isSearchFailed = true
                     )
                 }
-                Log.e("TAGGG ", "Check the city name you typed")
             }
         }
     }
@@ -146,8 +144,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             sharedPrefImpl.setValue(sunsetSP, mainUiState.value.sunset)
             sharedPrefImpl.setValue(lastUpdateTimeSP, mainUiState.value.lastUpdateTime)
             sharedPrefImpl.setValue(weatherIconSP, mainUiState.value.weatherIcon)
+            _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
         }
-        _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
     }
 
     fun searchActivated() {
