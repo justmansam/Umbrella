@@ -1,18 +1,14 @@
 package com.example.umbrella.ui
 
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.example.umbrella.ui.main.MainScreen
-import org.junit.Before
+import com.example.umbrella.MainActivity
 import org.junit.Rule
 import org.junit.Test
 
 class MainScreenTest {
-
-    private val arrayToTest = arrayOf<String?>(null)
-
     /*
-    Phone Language:
+    To test according to the Phone Language:
         Turkish -> "Şehir arayın (Stockholm veya London,US)"
         English -> "Search city (Stockholm or London,US)"
         Swedish -> "Sök stad (Stockholm eller London,US)"
@@ -20,15 +16,15 @@ class MainScreenTest {
     private val textFieldHint = "Şehir arayın (Stockholm veya London,US)"
 
     @get:Rule
-    val composeTestRule = createComposeRule()
-
-    @Before
-    fun setUp() {
-        composeTestRule.setContent { MainScreen(arrayToTest) }
-    }
+    val activityTestRule = createAndroidComposeRule<MainActivity>()
+    //val composeTestRule = createComposeRule() //PREVIOUS TEST
 
     @Test
     fun openAppWithoutPermission_showSearchBar() {
-        composeTestRule.onNodeWithText(textFieldHint).assertExists()
+        activityTestRule.onNodeWithText(textFieldHint).assertExists()
+        /* PREVIOUS TEST
+        //composeTestRule.setContent { MainScreen(null) }
+        //composeTestRule.onNodeWithText(textFieldHint).assertExists()
+         */
     }
 }

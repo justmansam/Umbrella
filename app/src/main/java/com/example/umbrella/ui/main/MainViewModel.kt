@@ -26,8 +26,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
     fun lookForSharedPref() {
+        sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
         viewModelScope.launch {
-            sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
             val sharedPrefArray = arrayOf(
                 sharedPrefImpl.getValue(citySP),
                 sharedPrefImpl.getValue(currentTempSP),
