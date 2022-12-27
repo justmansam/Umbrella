@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launchWhenCreated {
             checkConnection()
         }
-        setScreenContent(arrayOf())
+        setScreenContent(null)
     }
 
     private fun checkLocationPermissionAndSetContent() {
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
         alertDialog.show()
     }
 
-    private fun setScreenContent(screenContentArray: Array<String?>) {
+    private fun setScreenContent(screenContentArray: Array<String>?) {
         setContent {
             UmbrellaTheme {
                 Surface(

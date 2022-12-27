@@ -26,7 +26,7 @@ import com.example.umbrella.ui.common.mapToDrawableResource
 
 @Composable
 fun MainScreen(
-    screenContentArray: Array<String?>,
+    screenContentArray: Array<String>?,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val mainUiState by viewModel.mainUiState.collectAsState()
@@ -39,7 +39,7 @@ fun MainScreen(
     }
 
     // TO Avoid unnecessary recomposition which removes search error message!
-    if (!mainUiState.apiHasResponse && screenContentArray.isNotEmpty() && mainUiState.isSearchFailed == 0) {
+    if (!mainUiState.apiHasResponse && screenContentArray != null && mainUiState.isSearchFailed == 0) {
         /*
          * TO Show weather accordingly if user gave location permission
          * (latitude and longitude) on app start (for once in case of unnecessary recomposition)!
