@@ -167,11 +167,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun searchActivated() {
-        _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
-    }
-
-    fun exposeLocalData(sharedPrefDataToExpose: Array<String?>) {
+    private fun exposeLocalData(sharedPrefDataToExpose: Array<String?>) {
         _mainUiState.update { currentState ->
             currentState.copy(
                 city = sharedPrefDataToExpose[0]!!,
@@ -189,6 +185,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 hasSharedPref = true
             )
         }
+    }
+
+    fun searchActivated() {
+        _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
     }
 
     companion object {

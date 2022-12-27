@@ -71,7 +71,6 @@ class MainActivity : ComponentActivity() {
                     else -> {
                         // No location access granted.
                         Toast.makeText(this, R.string.permission_reminder, Toast.LENGTH_LONG).show()
-                        setScreenContent(arrayOf())
                     }
                 }
             }
@@ -107,7 +106,6 @@ class MainActivity : ComponentActivity() {
                 setNegativeButton(R.string.cancel) { dialog, id ->
                     Toast.makeText(mainActivity, R.string.permission_reminder, Toast.LENGTH_LONG)
                         .show()
-                    setScreenContent(arrayOf())
                 }
                 setTitle(R.string.alert_title)
                 setCancelable(false)

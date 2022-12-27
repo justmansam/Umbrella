@@ -34,23 +34,17 @@ fun MainScreen(
 
     // TO FORCE Show search bar if user landed for the first time or still didn't give location permission!
     if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive && mainUiState.isSearchFailed == 0) {
-        viewModel.lookForSharedPref()
+        viewModel.lookForSharedPref() //Check it!!!???
         viewModel.searchActivated()
     }
 
     // TO Avoid unnecessary recomposition which removes search error message!
-    if (screenContentArray.isNotEmpty() && mainUiState.isSearchFailed == 0) {
-        // TO Show weather accordingly if user has shared preference available on app start (for once)!!!
-        if (!mainUiState.hasSharedPref && screenContentArray.size > 3 && !screenContentArray[0].isNullOrEmpty()) {
-            viewModel.exposeLocalData(screenContentArray)
-        }
+    if (!mainUiState.apiHasResponse && screenContentArray.isNotEmpty() && mainUiState.isSearchFailed == 0) {
         /*
-        TO Show weather accordingly if user gave location permission
-        (latitude and longitude) on app start (for once in case of recomposition)!
+         * TO Show weather accordingly if user gave location permission
+         * (latitude and longitude) on app start (for once in case of unnecessary recomposition)!
          */
-        if (!mainUiState.apiHasResponse && (screenContentArray.size in 1..3)) {
-            viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
-        }
+        viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
     }
 
     // MAIN SCREEN
