@@ -326,53 +326,43 @@ fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
                 .weight(.5f)
                 .align(CenterVertically)
         ) {
-            Text(
-                text = stringResource(id = R.string.dawn),
-                modifier = modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = mainUiState.sunrise,
-                modifier = modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Box(modifier = modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_sunrise),
-                    contentDescription = "",
-                    modifier
-                        .size(86.dp)
-                        .align(Center)
-                )
-            }
+            SunInfoColumn(modifier, mainUiState.sunrise, R.string.dawn, R.drawable.ic_sunrise)
         }
         Spacer(modifier.size(8.dp))
         Column(
             modifier = modifier
                 .weight(.5f)
-                .fillMaxWidth()
-                .align(CenterVertically),
-            verticalArrangement = Arrangement.Center
+                .align(CenterVertically)
         ) {
-            Text(
-                text = stringResource(id = R.string.dusk),
-                modifier = modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = mainUiState.sunset,
-                modifier = modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Box(modifier = modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_sunset),
-                    contentDescription = "",
-                    modifier = modifier
-                        .size(86.dp)
-                        .align(Center)
-                )
-            }
+            SunInfoColumn(modifier, mainUiState.sunset, R.string.dusk, R.drawable.ic_sunset)
         }
+    }
+}
+
+@Composable
+fun SunInfoColumn(
+    modifier: Modifier,
+    uiSunState: String,
+    sunStringResource: Int,
+    sunPainterResource: Int
+) {
+    Text(
+        text = stringResource(id = sunStringResource),
+        modifier = modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
+    Text(
+        text = uiSunState,
+        modifier = modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
+    Box(modifier = modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = sunPainterResource),
+            contentDescription = "",
+            modifier
+                .size(86.dp)
+                .align(Center)
+        )
     }
 }
