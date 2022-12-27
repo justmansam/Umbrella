@@ -22,18 +22,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.ui.main.MainScreen
-import com.example.umbrella.ui.main.MainViewModel.Companion.citySP
-import com.example.umbrella.ui.main.MainViewModel.Companion.currentTempSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.feelsLikeTempSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.humiditySP
-import com.example.umbrella.ui.main.MainViewModel.Companion.lastUpdateTimeSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.maxTempSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.minTempSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.sunriseSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.sunsetSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.visibilitySP
-import com.example.umbrella.ui.main.MainViewModel.Companion.weatherIconSP
-import com.example.umbrella.ui.main.MainViewModel.Companion.windSP
 import com.example.umbrella.ui.theme.UmbrellaTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -47,24 +35,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
-        lookForSharedPref()
+        checkLocationPermissionAndSetContent()
         lifecycleScope.launchWhenCreated {
             checkConnection()
         }
-        checkPermissionAndGetLocation()
+        setScreenContent(arrayOf())
     }
 
-    private fun checkConnection() {
-        val connectivityManager =
-            ContextCompat.getSystemService(this, ConnectivityManager::class.java)
-        val currentNetwork = connectivityManager?.activeNetwork
-        if (currentNetwork == null) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun checkPermissionAndGetLocation() {
+    private fun checkLocationPermissionAndSetContent() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -93,6 +71,7 @@ class MainActivity : ComponentActivity() {
                     else -> {
                         // No location access granted.
                         Toast.makeText(this, R.string.permission_reminder, Toast.LENGTH_LONG).show()
+                        setScreenContent(arrayOf())
                     }
                 }
             }
@@ -109,6 +88,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun checkConnection() {
+        val connectivityManager =
+            ContextCompat.getSystemService(this, ConnectivityManager::class.java)
+        val currentNetwork = connectivityManager?.activeNetwork
+        if (currentNetwork == null) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_LONG).show()
+        }
+    }
+
     private fun showPermissionAlert(mainActivity: MainActivity) {
         val alertDialog: AlertDialog = this.let {
             val builder = AlertDialog.Builder(it)
@@ -119,6 +107,7 @@ class MainActivity : ComponentActivity() {
                 setNegativeButton(R.string.cancel) { dialog, id ->
                     Toast.makeText(mainActivity, R.string.permission_reminder, Toast.LENGTH_LONG)
                         .show()
+                    setScreenContent(arrayOf())
                 }
                 setTitle(R.string.alert_title)
                 setCancelable(false)
@@ -126,24 +115,6 @@ class MainActivity : ComponentActivity() {
             builder.create()
         }
         alertDialog.show()
-    }
-
-    private fun lookForSharedPref() {
-        val sharedPrefArray = arrayOf(
-            sharedPrefImpl.getValue(citySP),
-            sharedPrefImpl.getValue(currentTempSP),
-            sharedPrefImpl.getValue(feelsLikeTempSP),
-            sharedPrefImpl.getValue(minTempSP),
-            sharedPrefImpl.getValue(maxTempSP),
-            sharedPrefImpl.getValue(visibilitySP),
-            sharedPrefImpl.getValue(humiditySP),
-            sharedPrefImpl.getValue(windSP),
-            sharedPrefImpl.getValue(sunriseSP),
-            sharedPrefImpl.getValue(sunsetSP),
-            sharedPrefImpl.getValue(lastUpdateTimeSP),
-            sharedPrefImpl.getValue(weatherIconSP)
-        )
-        setScreenContent(sharedPrefArray)
     }
 
     private fun setScreenContent(screenContentArray: Array<String?>) {

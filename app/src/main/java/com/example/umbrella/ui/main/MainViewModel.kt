@@ -2,10 +2,11 @@ package com.example.umbrella.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.data.remote.api.RetrofitInstance
 import com.example.umbrella.data.remote.api.WeatherDataItem
-import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import com.example.umbrella.sharedPrefImpl
+import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,29 @@ class MainViewModel @Inject constructor() : ViewModel() {
     // Main UI state
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
+
+    fun lookForSharedPref() {
+        viewModelScope.launch {
+            sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
+            val sharedPrefArray = arrayOf(
+                sharedPrefImpl.getValue(citySP),
+                sharedPrefImpl.getValue(currentTempSP),
+                sharedPrefImpl.getValue(feelsLikeTempSP),
+                sharedPrefImpl.getValue(minTempSP),
+                sharedPrefImpl.getValue(maxTempSP),
+                sharedPrefImpl.getValue(visibilitySP),
+                sharedPrefImpl.getValue(humiditySP),
+                sharedPrefImpl.getValue(windSP),
+                sharedPrefImpl.getValue(sunriseSP),
+                sharedPrefImpl.getValue(sunsetSP),
+                sharedPrefImpl.getValue(lastUpdateTimeSP),
+                sharedPrefImpl.getValue(weatherIconSP)
+            )
+            if (!sharedPrefArray[0].isNullOrEmpty()) {
+                exposeLocalData(sharedPrefArray)
+            }
+        }
+    }
 
     fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
         _mainUiState.update { currentState ->
