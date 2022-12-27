@@ -20,7 +20,7 @@ class MainScreenTest {
     //val composeTestRule = createComposeRule() //PREVIOUS TEST
 
     @Test
-    fun openAppWithoutPermission_showSearchBar() {
+    fun openAppFirstTime_showSearchBar() {
         activityTestRule.onNodeWithText(textFieldHint).assertExists()
         /* PREVIOUS TEST
         //composeTestRule.setContent { MainScreen(null) }

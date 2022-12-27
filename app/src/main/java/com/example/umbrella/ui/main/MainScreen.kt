@@ -25,26 +25,13 @@ import com.example.umbrella.R
 import com.example.umbrella.ui.common.mapToDrawableResource
 
 @Composable
-fun MainScreen(
-    screenContentArray: Array<String>?,
-    viewModel: MainViewModel = hiltViewModel()
-) {
+fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val mainUiState by viewModel.mainUiState.collectAsState()
     val modifier: Modifier = Modifier
 
     // TO FORCE Show search bar if user landed for the first time or still didn't give location permission!
     if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive && mainUiState.isSearchFailed == 0) {
-        viewModel.lookForSharedPref() //Check it!!!???
         viewModel.searchActivated()
-    }
-
-    // TO Avoid unnecessary recomposition which removes search error message!
-    if (!mainUiState.apiHasResponse && screenContentArray != null && mainUiState.isSearchFailed == 0) {
-        /*
-         * TO Show weather accordingly if user gave location permission
-         * (latitude and longitude) on app start (for once in case of unnecessary recomposition)!
-         */
-        viewModel.showApiCallResult(null, screenContentArray[0], screenContentArray[1])
     }
 
     // MAIN SCREEN

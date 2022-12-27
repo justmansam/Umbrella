@@ -1,10 +1,12 @@
 package com.example.umbrella.ui.main
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.data.remote.api.RetrofitInstance
 import com.example.umbrella.data.remote.api.WeatherDataItem
+import com.example.umbrella.fusedLocationClient
 import com.example.umbrella.sharedPrefImpl
 import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,15 +50,28 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
-        _mainUiState.update { currentState ->
-            currentState.copy(
-                isInProcess = true,
-                hasLocation = false,
-                hasSharedPref = false
-            )
-        }
+    fun getLocation() {
         viewModelScope.launch {
+            // Ignore warning!! Permission already checked!!
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        showApiCallResult(null, location.latitude.toString(), location.longitude.toString())
+                    }
+                }
+        }
+    }
+
+    fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
+        viewModelScope.launch {
+            _mainUiState.update { currentState ->
+                currentState.copy(
+                    isInProcess = true,
+                    hasLocation = false,
+                    hasSharedPref = false
+                )
+            }
             val response = try {
                 if (latitude != null && longitude != null && latitude != "null" && longitude != "null") {
                     _mainUiState.update { currentState -> currentState.copy(hasLocation = true) }
