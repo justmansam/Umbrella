@@ -1,6 +1,6 @@
 package com.example.umbrella.data.remote.api
 
-data class Wind(
+data class WeatherWindData(
     val deg: Int,
     val gust: Double,
     val speed: Double

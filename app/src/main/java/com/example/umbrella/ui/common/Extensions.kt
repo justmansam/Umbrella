@@ -2,11 +2,11 @@ package com.example.umbrella.ui.common
 
 import androidx.annotation.DrawableRes
 import com.example.umbrella.R
-import com.example.umbrella.data.remote.api.WeatherDataItem
+import com.example.umbrella.data.remote.api.WeatherData
 import retrofit2.Response
 
 fun Int.toUTCformatedLocalTime(
-    response: Response<WeatherDataItem>,
+    response: Response<WeatherData>,
     returnOnlyHour: Boolean
 ): String {
     val timeZone = response.body()!!.timezone

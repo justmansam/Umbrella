@@ -1,6 +1,6 @@
 package com.example.umbrella.data.remote.api
 
-data class Sys(
+data class WeatherSunData(
     val country: String,
     val id: Int,
     val sunrise: Int,

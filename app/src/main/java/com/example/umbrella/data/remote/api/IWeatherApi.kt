@@ -10,13 +10,13 @@ interface IWeatherApi {
     suspend fun getWeatherByCity(
         @Query(value = "q") city: String,
         @Query(value = "appid") api_key: String
-    ): Response<WeatherDataItem>
+    ): Response<WeatherData>
 
     @GET("weather?units=metric")
     suspend fun getWeatherByCoordination(
         @Query(value = "lat") latitude: String,
         @Query(value = "lon") longitude: String,
         @Query(value = "appid") api_key: String
-    ): Response<WeatherDataItem>
+    ): Response<WeatherData>
 
 }

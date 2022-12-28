@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.data.remote.api.RetrofitInstance
-import com.example.umbrella.data.remote.api.WeatherDataItem
+import com.example.umbrella.data.remote.api.WeatherData
 import com.example.umbrella.fusedLocationClient
 import com.example.umbrella.sharedPrefImpl
 import com.example.umbrella.ui.common.toUTCformatedLocalTime
@@ -136,7 +136,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getResponses(response: Response<WeatherDataItem>) {
+    private fun getResponses(response: Response<WeatherData>) {
         _mainUiState.update { currentState ->
             currentState.copy(
                 city = response.body()!!.name,

@@ -1,6 +1,6 @@
 package com.example.umbrella.data.remote.api
 
-data class Main(
+data class WeatherMainEventsData(
     val feels_like: Double,
     val grnd_level: Int,
     val humidity: Int,
