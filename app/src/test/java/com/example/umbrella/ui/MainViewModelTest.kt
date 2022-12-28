@@ -28,7 +28,7 @@ class MainViewModelTest {
 
     @Test
     fun mainViewModel_ResponseIsSuccessful_UiStateUpdated() = runBlocking {
-        viewModel.showApiCallResult(null, "59.3326", "18.0649")
+        viewModel.callApiForResult(null, "59.3326", "18.0649")
 
         delay(3000) // To let ui state updated
 

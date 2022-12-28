@@ -57,13 +57,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 .addOnSuccessListener { location: Location? ->
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
-                        showApiCallResult(null, location.latitude.toString(), location.longitude.toString())
+                        callApiForResult(
+                            null,
+                            location.latitude.toString(),
+                            location.longitude.toString()
+                        )
                     }
                 }
         }
     }
 
-    fun showApiCallResult(city: String?, latitude: String?, longitude: String?) {
+    fun callApiForResult(city: String?, latitude: String?, longitude: String?) {
         viewModelScope.launch {
             _mainUiState.update { currentState ->
                 currentState.copy(
@@ -73,7 +77,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 )
             }
             val response = try {
-                if (latitude != null && longitude != null && latitude != "null" && longitude != "null") {
+                if (latitude != null && longitude != null) {
                     _mainUiState.update { currentState -> currentState.copy(hasLocation = true) }
                     RetrofitInstance.api.getWeatherByCoordination(
                         latitude,
@@ -115,7 +119,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 return@launch
             }
             if (response.isSuccessful) {
-                getResponses(response)
+                updateUiState(response)
                 _mainUiState.update { currentState ->
                     currentState.copy(
                         apiHasResponse = true,
@@ -136,7 +140,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun getResponses(response: Response<WeatherData>) {
+    private fun updateUiState(response: Response<WeatherData>) {
         _mainUiState.update { currentState ->
             currentState.copy(
                 city = response.body()!!.name,
