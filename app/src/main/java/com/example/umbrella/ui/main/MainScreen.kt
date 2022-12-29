@@ -20,6 +20,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.umbrella.R
 import com.example.umbrella.ui.common.ProcessField
 import com.example.umbrella.ui.common.SnackBar
+import com.example.umbrella.ui.main.components.AirConditionInfo
+import com.example.umbrella.ui.main.components.SunInfo
+import com.example.umbrella.ui.main.components.WeatherInfo
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable

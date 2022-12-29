@@ -1,4 +1,4 @@
-package com.example.umbrella.ui.main
+package com.example.umbrella.ui.main.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.umbrella.R
+import com.example.umbrella.ui.main.MainUiState
 
 @Composable
 fun AirConditionInfo(modifier: Modifier, mainUiState: MainUiState) {

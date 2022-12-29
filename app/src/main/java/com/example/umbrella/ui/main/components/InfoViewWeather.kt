@@ -1,4 +1,4 @@
-package com.example.umbrella.ui.main
+package com.example.umbrella.ui.main.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.umbrella.R
 import com.example.umbrella.ui.common.mapToDrawableResource
+import com.example.umbrella.ui.main.MainUiState
 
 @Composable
 fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {

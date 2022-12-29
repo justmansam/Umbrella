@@ -39,12 +39,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         connectivityManager = ContextCompat.getSystemService(this, ConnectivityManager::class.java)
 
         setScreenContent()
-        viewModel.lookForSharedPref()
         checkLocationPermission()
     }
 

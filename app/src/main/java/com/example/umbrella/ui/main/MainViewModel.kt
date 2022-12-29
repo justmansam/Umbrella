@@ -23,11 +23,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
-    fun lookForSharedPref() {
+    init {
         sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
         viewModelScope.launch {
             val sharedPrefArray = arrayOf(
