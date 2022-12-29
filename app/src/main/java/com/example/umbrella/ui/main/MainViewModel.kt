@@ -3,6 +3,7 @@ package com.example.umbrella.ui.main
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.umbrella.connectivityManager
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.data.remote.api.RetrofitInstance
 import com.example.umbrella.data.remote.api.WeatherData
@@ -208,6 +209,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun searchActivated() {
         _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
+    }
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            val currentNetwork = connectivityManager?.activeNetwork
+            if (currentNetwork == null) {
+                _mainUiState.update { currentState -> currentState.copy(hasConnection = false) }
+            } else {
+                _mainUiState.update { currentState -> currentState.copy(hasConnection = true) }
+            }
+        }
     }
 
     companion object {

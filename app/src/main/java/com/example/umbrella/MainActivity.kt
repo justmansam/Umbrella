@@ -19,7 +19,6 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.ui.main.MainScreen
 import com.example.umbrella.ui.main.MainViewModel
@@ -32,6 +31,7 @@ lateinit var sharedPref: SharedPreferences
 lateinit var sharedPrefImpl: SharedPreferencesImpl
 lateinit var fusedLocationClient: FusedLocationProviderClient
 lateinit var permissionToAsk: ActivityResultLauncher<Array<String>>
+var connectivityManager: ConnectivityManager? = null
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -40,13 +40,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        connectivityManager = ContextCompat.getSystemService(this, ConnectivityManager::class.java)
 
         setScreenContent()
         viewModel.lookForSharedPref()
         checkLocationPermission()
-        lifecycleScope.launchWhenCreated {
-            checkConnection()
-        }
     }
 
     private fun setScreenContent() {
@@ -85,15 +83,6 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             viewModel.getLocation()
-        }
-    }
-
-    private fun checkConnection() {
-        val connectivityManager =
-            ContextCompat.getSystemService(this, ConnectivityManager::class.java)
-        val currentNetwork = connectivityManager?.activeNetwork
-        if (currentNetwork == null) {
-            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_LONG).show()
         }
     }
 

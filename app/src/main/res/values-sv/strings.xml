@@ -9,6 +9,7 @@
     <string name="wind">Vind</string>
     <string name="last_update">Senast uppdaterad</string>
     <string name="no_connection">Ingen nätverksanslutning!</string>
+    <string name="dismiss">FÖRSTÅTT</string>
     <string name="type_city">Sök stad (Stockholm eller London,US)</string>
     <string name="local_time">(lokal tid)</string>
     <string name="OK">OK</string>

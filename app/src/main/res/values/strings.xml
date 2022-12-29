@@ -8,6 +8,7 @@
     <string name="wind">Wind</string>
     <string name="last_update">Last updated</string>
     <string name="no_connection">No network connection!</string>
+    <string name="dismiss">DISMISS</string>
     <string name="type_city">Search city (Stockholm or London,US)</string>
     <string name="local_time">(local time)</string>
     <string name="OK">OK</string>
