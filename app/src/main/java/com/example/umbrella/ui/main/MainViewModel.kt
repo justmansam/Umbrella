@@ -24,7 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
-    // Main UI state
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
@@ -144,11 +143,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 sunrise = (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
                 sunset = (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
                 lastUpdateTime = (response.body()!!.dt).toUTCformatedLocalTime(response, false),
-                weatherIcon = response.body()!!.weather[0].icon
-            )
-        }
-        _mainUiState.update { currentState ->
-            currentState.copy(
+                weatherIcon = response.body()!!.weather[0].icon,
                 isInProcess = false
             )
         }

@@ -24,6 +24,7 @@ import com.example.umbrella.ui.common.SnackBar
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+
     val mainUiState by viewModel.mainUiState.collectAsState()
     val modifier: Modifier = Modifier
     val scaffoldState: ScaffoldState = rememberScaffoldState()
