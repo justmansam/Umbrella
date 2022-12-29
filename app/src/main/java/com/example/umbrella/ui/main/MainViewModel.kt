@@ -70,16 +70,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun callApiForResult(city: String?, latitude: String?, longitude: String?) {
         viewModelScope.launch {
-            _mainUiState.update { currentState ->
-                currentState.copy(
-                    isInProcess = true,
-                    hasLocation = false,
-                    hasSharedPref = false
-                )
-            }
+            _mainUiState.update { currentState -> currentState.copy(isInProcess = true) }
             val response = try {
                 if (latitude != null && longitude != null) {
-                    _mainUiState.update { currentState -> currentState.copy(hasLocation = true) }
                     RetrofitInstance.api.getWeatherByCoordination(
                         latitude,
                         longitude,
@@ -103,7 +96,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     currentState.copy(
                         isSearchFailed = 2,
                         isSearchActive = true,
-                        apiHasResponse = false,
                         isInProcess = false
                     )
                 }
@@ -113,7 +105,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     currentState.copy(
                         isSearchFailed = 3,
                         isSearchActive = true,
-                        apiHasResponse = false,
                         isInProcess = false
                     )
                 }
@@ -123,7 +114,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 updateUiState(response)
                 _mainUiState.update { currentState ->
                     currentState.copy(
-                        apiHasResponse = true,
                         isSearchActive = false,
                         isSearchFailed = 0
                     )
@@ -133,8 +123,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     currentState.copy(
                         isSearchFailed = 1,
                         isSearchActive = true,
-                        isInProcess = false,
-                        apiHasResponse = false,
+                        isInProcess = false
                     )
                 }
             }

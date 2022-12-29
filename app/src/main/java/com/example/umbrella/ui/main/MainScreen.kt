@@ -28,8 +28,8 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val modifier: Modifier = Modifier
     val scaffoldState: ScaffoldState = rememberScaffoldState()
 
-    // TO FORCE Show search bar if user landed for the first time or still didn't give location permission!
-    if (!mainUiState.apiHasResponse && !mainUiState.hasSharedPref && !mainUiState.hasLocation && !mainUiState.isSearchActive && mainUiState.isSearchFailed == 0) {
+    // TO FORCE Show search bar if user landed for the first time!
+    if (!mainUiState.hasSharedPref && !mainUiState.isSearchActive) {
         viewModel.searchActivated()
     }
 

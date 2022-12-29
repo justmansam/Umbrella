@@ -2,8 +2,6 @@ package com.example.umbrella.ui.main
 
 data class MainUiState(
     // FOR GENERAL UI STATE MANAGEMENT
-    val apiHasResponse: Boolean = false,
-    val hasLocation: Boolean = false,
     val isSearchActive: Boolean = false,
     val isSearchFailed: Int = 0, // 0:No, 1:Yes(Typo!), 2:Yes(No Connection!), 3:Yes(Unexpected!)
     val hasSharedPref: Boolean = false,
