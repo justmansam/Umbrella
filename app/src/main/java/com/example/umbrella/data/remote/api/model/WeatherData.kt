@@ -1,4 +1,4 @@
-package com.example.umbrella.data.remote.api
+package com.example.umbrella.data.remote.api.model
 
 data class WeatherData(
     val dt: Int,

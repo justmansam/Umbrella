@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.connectivityManager
 import com.example.umbrella.data.local.pref.SharedPreferencesImpl
-import com.example.umbrella.data.remote.api.RetrofitInstance
-import com.example.umbrella.data.remote.api.WeatherData
+import com.example.umbrella.data.remote.api.RetrofitInstance.api
+import com.example.umbrella.data.remote.api.WeatherRepoImpl
+import com.example.umbrella.data.remote.api.model.WeatherData
 import com.example.umbrella.fusedLocationClient
 import com.example.umbrella.sharedPrefImpl
 import com.example.umbrella.ui.common.toUTCformatedLocalTime
@@ -23,6 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
+    private val repository = WeatherRepoImpl(api)
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
@@ -54,45 +56,25 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getLocation() {
-        viewModelScope.launch {
-            // Ignore warning!! Permission already checked!!
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        callApiForResult(
-                            null,
-                            location.latitude.toString(),
-                            location.longitude.toString()
-                        )
-                    }
+        // Ignore warning!! Permission already checked!!
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    callApiForResult(
+                        null,
+                        location.latitude.toString(),
+                        location.longitude.toString()
+                    )
                 }
-        }
+            }
     }
 
     fun callApiForResult(city: String?, latitude: String?, longitude: String?) {
         viewModelScope.launch {
             _mainUiState.update { currentState -> currentState.copy(isInProcess = true) }
             val response = try {
-                if (latitude != null && longitude != null) {
-                    RetrofitInstance.api.getWeatherByCoordination(
-                        latitude,
-                        longitude,
-                        API_KEY
-                    )
-                } else {
-                    if (city != null) {
-                        RetrofitInstance.api.getWeatherByCity(
-                            city,
-                            API_KEY
-                        )
-                    } else {
-                        RetrofitInstance.api.getWeatherByCity(
-                            "",
-                            API_KEY
-                        )
-                    }
-                }
+                repository.getWeatherData(city, latitude, longitude)
             } catch (e: IOException) {
                 _mainUiState.update { currentState ->
                     currentState.copy(
@@ -210,7 +192,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     companion object {
-        private const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
+        const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
 
         // FOR Shared Preferences
         const val citySP = "city"

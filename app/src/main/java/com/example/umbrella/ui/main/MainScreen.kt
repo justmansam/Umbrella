@@ -26,8 +26,8 @@ import com.example.umbrella.ui.main.components.WeatherInfo
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
-
+fun MainScreen() {
+    val viewModel: MainViewModel = hiltViewModel()
     val mainUiState by viewModel.mainUiState.collectAsState()
     val modifier: Modifier = Modifier
     val scaffoldState: ScaffoldState = rememberScaffoldState()

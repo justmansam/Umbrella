@@ -2,7 +2,7 @@ package com.example.umbrella.ui.common
 
 import androidx.annotation.DrawableRes
 import com.example.umbrella.R
-import com.example.umbrella.data.remote.api.WeatherData
+import com.example.umbrella.data.remote.api.model.WeatherData
 import retrofit2.Response
 
 fun Int.toUTCformatedLocalTime(
