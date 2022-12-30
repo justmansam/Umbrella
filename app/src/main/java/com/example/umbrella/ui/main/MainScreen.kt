@@ -23,12 +23,14 @@ import com.example.umbrella.ui.common.SnackBar
 import com.example.umbrella.ui.main.components.AirConditionInfo
 import com.example.umbrella.ui.main.components.SunInfo
 import com.example.umbrella.ui.main.components.WeatherInfo
+import com.example.umbrella.ui.main.model.MainUiState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     val viewModel: MainViewModel = hiltViewModel()
     val mainUiState by viewModel.mainUiState.collectAsState()
+    val uiDataState by viewModel.uiDataState.collectAsState()
     val modifier: Modifier = Modifier
     val scaffoldState: ScaffoldState = rememberScaffoldState()
 
@@ -68,7 +70,7 @@ fun MainScreen() {
                 ) {
                     if (mainUiState.isInProcess) ProcessField(modifier) else WeatherInfo(
                         modifier,
-                        mainUiState
+                        uiDataState
                     )
                 }
                 Spacer(modifier.size(16.dp))
@@ -80,7 +82,7 @@ fun MainScreen() {
                 ) {
                     if (mainUiState.isInProcess) ProcessField(modifier) else AirConditionInfo(
                         modifier,
-                        mainUiState
+                        uiDataState
                     )
                 }
                 Spacer(modifier.size(16.dp))
@@ -92,7 +94,7 @@ fun MainScreen() {
                 ) {
                     if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(
                         modifier,
-                        mainUiState
+                        uiDataState
                     )
                 }
                 Spacer(modifier.size(16.dp))
@@ -101,7 +103,7 @@ fun MainScreen() {
                         modifier = modifier
                             .fillMaxWidth(),
                         text = stringResource(id = R.string.last_update)
-                                + " " + mainUiState.lastUpdateTime
+                                + " " + uiDataState.lastUpdateTime
                                 + " " + stringResource(id = R.string.local_time),
                         fontSize = 10.sp
                     )

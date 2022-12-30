@@ -12,10 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.umbrella.R
-import com.example.umbrella.ui.main.MainUiState
+import com.example.umbrella.ui.main.model.UiDataState
 
 @Composable
-fun AirConditionInfo(modifier: Modifier, mainUiState: MainUiState) {
+fun AirConditionInfo(modifier: Modifier, uiDataState: UiDataState) {
     Row(
         modifier = modifier
             .padding(vertical = 20.dp)
@@ -28,7 +28,7 @@ fun AirConditionInfo(modifier: Modifier, mainUiState: MainUiState) {
         ) {
             ACInfoColumn(
                 modifier,
-                mainUiState.visibility.toString(),
+                uiDataState.visibility,
                 R.string.visibility,
                 R.drawable.ic_visibility,
                 " %"
@@ -46,7 +46,7 @@ fun AirConditionInfo(modifier: Modifier, mainUiState: MainUiState) {
         ) {
             ACInfoColumn(
                 modifier,
-                mainUiState.humidity.toString(),
+                uiDataState.humidity,
                 R.string.humidity,
                 R.drawable.ic_humidity,
                 " %"
@@ -64,7 +64,7 @@ fun AirConditionInfo(modifier: Modifier, mainUiState: MainUiState) {
         ) {
             ACInfoColumn(
                 modifier,
-                mainUiState.wind.toString(),
+                uiDataState.wind,
                 R.string.wind,
                 R.drawable.ic_wind,
                 " km/h"

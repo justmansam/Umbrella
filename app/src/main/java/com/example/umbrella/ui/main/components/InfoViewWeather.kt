@@ -12,10 +12,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.umbrella.R
 import com.example.umbrella.ui.common.mapToDrawableResource
-import com.example.umbrella.ui.main.MainUiState
+import com.example.umbrella.ui.main.model.UiDataState
 
 @Composable
-fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {
+fun WeatherInfo(modifier: Modifier, uiDataState: UiDataState) {
     Column(
         modifier = modifier
             .padding(
@@ -34,13 +34,13 @@ fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = mainUiState.currentTemperature.toString() + "\u00B0",
+                    text = uiDataState.currentTemperature + "\u00B0",
                     fontSize = 84.sp,
                     modifier = modifier.fillMaxWidth()
                 )
                 Spacer(modifier.size(4.dp))
                 Text(
-                    text = mainUiState.city,
+                    text = uiDataState.city,
                     fontSize = 32.sp,
                     modifier = modifier.fillMaxWidth()
                 )
@@ -48,7 +48,7 @@ fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {
                 Text(
                     text = stringResource(id = R.string.feels_like)
                             + " "
-                            + mainUiState.feelsLikeTemperature.toString()
+                            + uiDataState.feelsLikeTemperature
                             + "\u00B0",
                     fontSize = 16.sp,
                     modifier = modifier.fillMaxWidth()
@@ -56,9 +56,9 @@ fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {
                 Spacer(modifier.size(3.dp))
                 Text(
                     text = "Min "
-                            + mainUiState.minTemperature.toString()
+                            + uiDataState.minTemperature
                             + "\u00B0 / Max "
-                            + mainUiState.maxTemperature.toString()
+                            + uiDataState.maxTemperature
                             + "°",
                     fontSize = 16.sp,
                     modifier = modifier.fillMaxWidth()
@@ -70,7 +70,7 @@ fun WeatherInfo(modifier: Modifier, mainUiState: MainUiState) {
                     .weight(.35f)
                     .fillMaxSize()
                     .padding(top = 16.dp),
-                painter = painterResource((mainUiState.weatherIcon).mapToDrawableResource()),
+                painter = painterResource((uiDataState.weatherIcon).mapToDrawableResource()),
                 contentDescription = ""
             )
         }

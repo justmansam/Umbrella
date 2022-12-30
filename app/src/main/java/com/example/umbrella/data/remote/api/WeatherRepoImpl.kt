@@ -1,7 +1,6 @@
 package com.example.umbrella.data.remote.api
 
 import com.example.umbrella.data.remote.api.model.WeatherData
-import com.example.umbrella.ui.main.MainViewModel
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -18,21 +17,24 @@ class WeatherRepoImpl @Inject constructor(
             api.getWeatherByCoordination(
                 latitude,
                 longitude,
-                MainViewModel.API_KEY
+                API_KEY
             )
         } else {
             if (city != null) {
                 api.getWeatherByCity(
                     city,
-                    MainViewModel.API_KEY
+                    API_KEY
                 )
             } else {
                 api.getWeatherByCity(
                     "",
-                    MainViewModel.API_KEY
+                    API_KEY
                 )
             }
         }
     }
 
+    companion object {
+        private const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
+    }
 }

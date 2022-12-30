@@ -11,6 +11,8 @@ import com.example.umbrella.data.remote.api.model.WeatherData
 import com.example.umbrella.fusedLocationClient
 import com.example.umbrella.sharedPrefImpl
 import com.example.umbrella.ui.common.toUTCformatedLocalTime
+import com.example.umbrella.ui.main.model.MainUiState
+import com.example.umbrella.ui.main.model.UiDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val repository = WeatherRepoImpl(api)
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
+    private val _uiDataState = MutableStateFlow(UiDataState())
+    val uiDataState: StateFlow<UiDataState> = _uiDataState.asStateFlow()
 
     init {
         lookForSharedPreferences()
@@ -36,18 +40,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
         sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
         viewModelScope.launch {
             val sharedPrefArray = arrayOf(
-                sharedPrefImpl.getValue(citySP),
-                sharedPrefImpl.getValue(currentTempSP),
-                sharedPrefImpl.getValue(feelsLikeTempSP),
-                sharedPrefImpl.getValue(minTempSP),
-                sharedPrefImpl.getValue(maxTempSP),
-                sharedPrefImpl.getValue(visibilitySP),
-                sharedPrefImpl.getValue(humiditySP),
-                sharedPrefImpl.getValue(windSP),
-                sharedPrefImpl.getValue(sunriseSP),
-                sharedPrefImpl.getValue(sunsetSP),
-                sharedPrefImpl.getValue(lastUpdateTimeSP),
-                sharedPrefImpl.getValue(weatherIconSP)
+                sharedPrefImpl.getValue(CITY_SP),
+                sharedPrefImpl.getValue(TEMPERATURE_SP),
+                sharedPrefImpl.getValue(FEELS_LIKE_SP),
+                sharedPrefImpl.getValue(MIN_TEMP_SP),
+                sharedPrefImpl.getValue(MAX_TEMP_SP),
+                sharedPrefImpl.getValue(VISIBILITY_SP),
+                sharedPrefImpl.getValue(HUMIDITY_SP),
+                sharedPrefImpl.getValue(WIND_SP),
+                sharedPrefImpl.getValue(SUN_RISE_SP),
+                sharedPrefImpl.getValue(SUN_SET_SP),
+                sharedPrefImpl.getValue(UPDATE_TIME_SP),
+                sharedPrefImpl.getValue(WEATHER_ICON_SP)
             )
             if (!sharedPrefArray[0].isNullOrEmpty()) {
                 exposeLocalData(sharedPrefArray)
@@ -115,65 +119,62 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun updateUiState(response: Response<WeatherData>) {
-        _mainUiState.update { currentState ->
+        _uiDataState.update { currentState ->
             currentState.copy(
                 city = response.body()!!.name,
-                currentTemperature = response.body()!!.main.temp.toInt(),
-                feelsLikeTemperature = response.body()!!.main.feels_like.toInt(),
-                minTemperature = response.body()!!.main.temp_min.toInt(),
-                maxTemperature = response.body()!!.main.temp_max.toInt(),
-                visibility = response.body()!!.visibility / 100,
-                humidity = response.body()!!.main.humidity,
-                wind = response.body()!!.wind.speed.toInt(),
+                currentTemperature = response.body()!!.main.temp.toInt().toString(),
+                feelsLikeTemperature = response.body()!!.main.feels_like.toInt().toString(),
+                minTemperature = response.body()!!.main.temp_min.toInt().toString(),
+                maxTemperature = response.body()!!.main.temp_max.toInt().toString(),
+                visibility = (response.body()!!.visibility / 100).toString(),
+                humidity = response.body()!!.main.humidity.toString(),
+                wind = response.body()!!.wind.speed.toInt().toString(),
                 sunrise = (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
                 sunset = (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
                 lastUpdateTime = (response.body()!!.dt).toUTCformatedLocalTime(response, false),
-                weatherIcon = response.body()!!.weather[0].icon,
-                isInProcess = false
+                weatherIcon = response.body()!!.weather[0].icon
             )
         }
+        _mainUiState.update { currentState -> currentState.copy(isInProcess = false) }
         updateSharedPreferences()
     }
 
     private fun updateSharedPreferences() {
         viewModelScope.launch {
-            sharedPrefImpl.setValue(citySP, mainUiState.value.city)
-            sharedPrefImpl.setValue(currentTempSP, mainUiState.value.currentTemperature.toString())
-            sharedPrefImpl.setValue(
-                feelsLikeTempSP,
-                mainUiState.value.feelsLikeTemperature.toString()
-            )
-            sharedPrefImpl.setValue(minTempSP, mainUiState.value.minTemperature.toString())
-            sharedPrefImpl.setValue(maxTempSP, mainUiState.value.maxTemperature.toString())
-            sharedPrefImpl.setValue(visibilitySP, mainUiState.value.visibility.toString())
-            sharedPrefImpl.setValue(humiditySP, mainUiState.value.humidity.toString())
-            sharedPrefImpl.setValue(windSP, mainUiState.value.wind.toString())
-            sharedPrefImpl.setValue(sunriseSP, mainUiState.value.sunrise)
-            sharedPrefImpl.setValue(sunsetSP, mainUiState.value.sunset)
-            sharedPrefImpl.setValue(lastUpdateTimeSP, mainUiState.value.lastUpdateTime)
-            sharedPrefImpl.setValue(weatherIconSP, mainUiState.value.weatherIcon)
+            sharedPrefImpl.setValue(CITY_SP, uiDataState.value.city)
+            sharedPrefImpl.setValue(TEMPERATURE_SP, uiDataState.value.currentTemperature)
+            sharedPrefImpl.setValue(FEELS_LIKE_SP, uiDataState.value.feelsLikeTemperature)
+            sharedPrefImpl.setValue(MIN_TEMP_SP, uiDataState.value.minTemperature)
+            sharedPrefImpl.setValue(MAX_TEMP_SP, uiDataState.value.maxTemperature)
+            sharedPrefImpl.setValue(VISIBILITY_SP, uiDataState.value.visibility)
+            sharedPrefImpl.setValue(HUMIDITY_SP, uiDataState.value.humidity)
+            sharedPrefImpl.setValue(WIND_SP, uiDataState.value.wind)
+            sharedPrefImpl.setValue(SUN_RISE_SP, uiDataState.value.sunrise)
+            sharedPrefImpl.setValue(SUN_SET_SP, uiDataState.value.sunset)
+            sharedPrefImpl.setValue(UPDATE_TIME_SP, uiDataState.value.lastUpdateTime)
+            sharedPrefImpl.setValue(WEATHER_ICON_SP, uiDataState.value.weatherIcon)
             _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
         }
     }
 
     private fun exposeLocalData(sharedPrefDataToExpose: Array<String?>) {
-        _mainUiState.update { currentState ->
+        _uiDataState.update { currentState ->
             currentState.copy(
                 city = sharedPrefDataToExpose[0]!!,
-                currentTemperature = sharedPrefDataToExpose[1]!!.toInt(),
-                feelsLikeTemperature = sharedPrefDataToExpose[2]!!.toInt(),
-                minTemperature = sharedPrefDataToExpose[3]!!.toInt(),
-                maxTemperature = sharedPrefDataToExpose[4]!!.toInt(),
-                visibility = sharedPrefDataToExpose[5]!!.toInt(),
-                humidity = sharedPrefDataToExpose[6]!!.toInt(),
-                wind = sharedPrefDataToExpose[7]!!.toInt(),
+                currentTemperature = sharedPrefDataToExpose[1]!!,
+                feelsLikeTemperature = sharedPrefDataToExpose[2]!!,
+                minTemperature = sharedPrefDataToExpose[3]!!,
+                maxTemperature = sharedPrefDataToExpose[4]!!,
+                visibility = sharedPrefDataToExpose[5]!!,
+                humidity = sharedPrefDataToExpose[6]!!,
+                wind = sharedPrefDataToExpose[7]!!,
                 sunrise = sharedPrefDataToExpose[8]!!,
                 sunset = sharedPrefDataToExpose[9]!!,
                 lastUpdateTime = sharedPrefDataToExpose[10]!!,
-                weatherIcon = sharedPrefDataToExpose[11]!!,
-                hasSharedPref = true
+                weatherIcon = sharedPrefDataToExpose[11]!!
             )
         }
+        _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
     }
 
     fun searchActivated() {
@@ -192,20 +193,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     companion object {
-        const val API_KEY = "7d9c2f60d1047b2aaae0639fdd393995"
-
-        // FOR Shared Preferences
-        const val citySP = "city"
-        const val currentTempSP = "currentTemp"
-        const val feelsLikeTempSP = "feelsLikeTemp"
-        const val minTempSP = "minTemp"
-        const val maxTempSP = "maxTemp"
-        const val visibilitySP = "visibility"
-        const val humiditySP = "humidity"
-        const val windSP = "wind"
-        const val sunriseSP = "sunrise"
-        const val sunsetSP = "sunset"
-        const val lastUpdateTimeSP = "lastUpdateTime"
-        const val weatherIconSP = "weatherIcon"
+        private const val CITY_SP = "city"
+        private const val TEMPERATURE_SP = "currentTemp"
+        private const val FEELS_LIKE_SP = "feelsLikeTemp"
+        private const val MIN_TEMP_SP = "minTemp"
+        private const val MAX_TEMP_SP = "maxTemp"
+        private const val VISIBILITY_SP = "visibility"
+        private const val HUMIDITY_SP = "humidity"
+        private const val WIND_SP = "wind"
+        private const val SUN_RISE_SP = "sunrise"
+        private const val SUN_SET_SP = "sunset"
+        private const val UPDATE_TIME_SP = "lastUpdateTime"
+        private const val WEATHER_ICON_SP = "weatherIcon"
     }
 }

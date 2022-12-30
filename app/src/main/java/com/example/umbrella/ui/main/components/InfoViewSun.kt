@@ -11,10 +11,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.umbrella.R
-import com.example.umbrella.ui.main.MainUiState
+import com.example.umbrella.ui.main.model.UiDataState
 
 @Composable
-fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
+fun SunInfo(modifier: Modifier, uiDataState: UiDataState) {
     Row(
         modifier = modifier
             .padding(top = 20.dp, start = 16.dp, end = 16.dp)
@@ -25,7 +25,7 @@ fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
                 .weight(.5f)
                 .align(Alignment.CenterVertically)
         ) {
-            SunInfoColumn(modifier, mainUiState.sunrise, R.string.dawn, R.drawable.ic_sunrise)
+            SunInfoColumn(modifier, uiDataState.sunrise, R.string.dawn, R.drawable.ic_sunrise)
         }
         Spacer(modifier.size(8.dp))
         Column(
@@ -33,7 +33,7 @@ fun SunInfo(modifier: Modifier, mainUiState: MainUiState) {
                 .weight(.5f)
                 .align(Alignment.CenterVertically)
         ) {
-            SunInfoColumn(modifier, mainUiState.sunset, R.string.dusk, R.drawable.ic_sunset)
+            SunInfoColumn(modifier, uiDataState.sunset, R.string.dusk, R.drawable.ic_sunset)
         }
     }
 }
