@@ -7,15 +7,23 @@ class SharedPreferencesImpl @Inject constructor(
     private val pref: SharedPreferences
 ) : ISharedPreferences {
 
-    override fun setValue(key: String, value: String) {
-        pref.edit().putString(key, value).apply()
+    override suspend fun setValue(key: Array<String>, value: Array<String>) {
+        for (i in key) {
+            pref.edit().putString(i, value[key.indexOf(i)]).apply()
+        }
     }
 
-    override fun removeValue(key: String) {
-        pref.edit().remove(key).apply()
+    override suspend fun removeValue(key: Array<String>) {
+        for (i in key) {
+            pref.edit().remove(i).apply()
+        }
     }
 
-    override fun getValue(key: String): String? {
-        return pref.getString(key, null)
+    override suspend fun getValue(key: Array<String>): Array<String?> {
+        var arrayOfSharedPref: Array<String?> = emptyArray()
+        for (i in key) {
+            arrayOfSharedPref += pref.getString(i, null)
+        }
+        return arrayOfSharedPref
     }
 }

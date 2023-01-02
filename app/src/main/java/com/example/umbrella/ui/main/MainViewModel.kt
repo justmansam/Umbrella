@@ -39,23 +39,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private fun lookForSharedPreferences() {
         sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
         viewModelScope.launch {
-            val sharedPrefArray = arrayOf(
-                sharedPrefImpl.getValue(CITY_SP),
-                sharedPrefImpl.getValue(TEMPERATURE_SP),
-                sharedPrefImpl.getValue(FEELS_LIKE_SP),
-                sharedPrefImpl.getValue(MIN_TEMP_SP),
-                sharedPrefImpl.getValue(MAX_TEMP_SP),
-                sharedPrefImpl.getValue(VISIBILITY_SP),
-                sharedPrefImpl.getValue(HUMIDITY_SP),
-                sharedPrefImpl.getValue(WIND_SP),
-                sharedPrefImpl.getValue(SUN_RISE_SP),
-                sharedPrefImpl.getValue(SUN_SET_SP),
-                sharedPrefImpl.getValue(UPDATE_TIME_SP),
-                sharedPrefImpl.getValue(WEATHER_ICON_SP)
-            )
-            if (!sharedPrefArray[0].isNullOrEmpty()) {
-                exposeLocalData(sharedPrefArray)
-            }
+            val sharedPrefArray = sharedPrefImpl.getValue(SHARED_PREF_KEY_ARRAY)
+            if (!sharedPrefArray[0].isNullOrEmpty()) exposeLocalData(sharedPrefArray)
         }
     }
 
@@ -141,18 +126,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private fun updateSharedPreferences() {
         viewModelScope.launch {
-            sharedPrefImpl.setValue(CITY_SP, uiDataState.value.city)
-            sharedPrefImpl.setValue(TEMPERATURE_SP, uiDataState.value.currentTemperature)
-            sharedPrefImpl.setValue(FEELS_LIKE_SP, uiDataState.value.feelsLikeTemperature)
-            sharedPrefImpl.setValue(MIN_TEMP_SP, uiDataState.value.minTemperature)
-            sharedPrefImpl.setValue(MAX_TEMP_SP, uiDataState.value.maxTemperature)
-            sharedPrefImpl.setValue(VISIBILITY_SP, uiDataState.value.visibility)
-            sharedPrefImpl.setValue(HUMIDITY_SP, uiDataState.value.humidity)
-            sharedPrefImpl.setValue(WIND_SP, uiDataState.value.wind)
-            sharedPrefImpl.setValue(SUN_RISE_SP, uiDataState.value.sunrise)
-            sharedPrefImpl.setValue(SUN_SET_SP, uiDataState.value.sunset)
-            sharedPrefImpl.setValue(UPDATE_TIME_SP, uiDataState.value.lastUpdateTime)
-            sharedPrefImpl.setValue(WEATHER_ICON_SP, uiDataState.value.weatherIcon)
+            val uiDataStateArray = arrayOf(
+                uiDataState.value.city,
+                uiDataState.value.currentTemperature,
+                uiDataState.value.feelsLikeTemperature,
+                uiDataState.value.minTemperature,
+                uiDataState.value.maxTemperature,
+                uiDataState.value.visibility,
+                uiDataState.value.humidity,
+                uiDataState.value.wind,
+                uiDataState.value.sunrise,
+                uiDataState.value.sunset,
+                uiDataState.value.lastUpdateTime,
+                uiDataState.value.weatherIcon
+            )
+            sharedPrefImpl.setValue(SHARED_PREF_KEY_ARRAY, uiDataStateArray)
             _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
         }
     }
@@ -193,17 +181,19 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     companion object {
-        private const val CITY_SP = "city"
-        private const val TEMPERATURE_SP = "currentTemp"
-        private const val FEELS_LIKE_SP = "feelsLikeTemp"
-        private const val MIN_TEMP_SP = "minTemp"
-        private const val MAX_TEMP_SP = "maxTemp"
-        private const val VISIBILITY_SP = "visibility"
-        private const val HUMIDITY_SP = "humidity"
-        private const val WIND_SP = "wind"
-        private const val SUN_RISE_SP = "sunrise"
-        private const val SUN_SET_SP = "sunset"
-        private const val UPDATE_TIME_SP = "lastUpdateTime"
-        private const val WEATHER_ICON_SP = "weatherIcon"
+        private val SHARED_PREF_KEY_ARRAY = arrayOf(
+            "city",
+            "currentTemp",
+            "feelsLikeTemp",
+            "minTemp",
+            "maxTemp",
+            "visibility",
+            "humidity",
+            "wind",
+            "sunrise",
+            "sunset",
+            "lastUpdateTime",
+            "weatherIcon"
+        )
     }
 }

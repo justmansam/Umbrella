@@ -1,7 +1,7 @@
 package com.example.umbrella.data.local.pref
 
 interface ISharedPreferences {
-    fun setValue(key: String, value: String)
-    fun getValue(key: String): String?
-    fun removeValue(key: String)
+    suspend fun setValue(key: Array<String>, value: Array<String>)
+    suspend fun getValue(key: Array<String>): Array<String?>
+    suspend fun removeValue(key: Array<String>)
 }
