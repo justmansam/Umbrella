@@ -42,11 +42,6 @@ class MainActivity : ComponentActivity() {
         sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         connectivityManager = ContextCompat.getSystemService(this, ConnectivityManager::class.java)
 
-        setScreenContent()
-        checkLocationPermission()
-    }
-
-    private fun setScreenContent() {
         setContent {
             UmbrellaTheme {
                 Surface(
@@ -57,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        checkLocationPermission()
     }
 
     private fun checkLocationPermission() {
