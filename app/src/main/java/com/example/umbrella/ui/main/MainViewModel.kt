@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private fun lookForSharedPreferences() {
         viewModelScope.launch {
             val sharedPrefArray = sharedPrefImpl.getValue(SHARED_PREF_KEY_ARRAY)
-            if (!sharedPrefArray[0].isNullOrEmpty()) {
+            if (sharedPrefArray[0] != null && sharedPrefArray[1] != null && sharedPrefArray[11] != null) {
                 updateUiDataState(sharedPrefArray)
                 _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
             }
@@ -108,41 +108,45 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     private suspend fun updateSharedPreferences(response: Response<WeatherData>) {
         viewModelScope.launch {
-            val apiResponseArray = arrayOf(
-                response.body()!!.name,
-                response.body()!!.main.temp.toInt().toString(),
-                response.body()!!.main.feels_like.toInt().toString(),
-                response.body()!!.main.temp_min.toInt().toString(),
-                response.body()!!.main.temp_max.toInt().toString(),
-                (response.body()!!.visibility / 100).toString(),
-                response.body()!!.main.humidity.toString(),
-                response.body()!!.wind.speed.toInt().toString(),
-                (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
-                (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
-                (response.body()!!.dt).toUTCformatedLocalTime(response, false),
-                response.body()!!.weather[0].icon
-            )
-            sharedPrefImpl.setValue(SHARED_PREF_KEY_ARRAY, apiResponseArray)
-            _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
-            lookForSharedPreferences()
+            try {
+                val apiResponseArray = arrayOf(
+                    response.body()!!.name,
+                    response.body()!!.main.temp.toInt().toString(),
+                    response.body()!!.main.feels_like.toInt().toString(),
+                    response.body()!!.main.temp_min.toInt().toString(),
+                    response.body()!!.main.temp_max.toInt().toString(),
+                    (response.body()!!.visibility / 100).toString(),
+                    response.body()!!.main.humidity.toString(),
+                    response.body()!!.wind.speed.toInt().toString(),
+                    (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
+                    (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
+                    (response.body()!!.dt).toUTCformatedLocalTime(response, false),
+                    response.body()!!.weather[0].icon
+                )
+                sharedPrefImpl.setValue(SHARED_PREF_KEY_ARRAY, apiResponseArray)
+                _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
+                lookForSharedPreferences()
+            } catch (e: java.lang.NullPointerException) {
+                _mainUiState.update { currentState -> currentState.copy(isSearchFailed = 3) }
+            }
         }
     }
 
     private fun updateUiDataState(dataToExpose: Array<String?>) {
         _uiDataState.update { currentState ->
             currentState.copy(
-                city = dataToExpose[0]!!,
-                currentTemperature = dataToExpose[1]!!,
-                feelsLikeTemperature = dataToExpose[2]!!,
-                minTemperature = dataToExpose[3]!!,
-                maxTemperature = dataToExpose[4]!!,
-                visibility = dataToExpose[5]!!,
-                humidity = dataToExpose[6]!!,
-                wind = dataToExpose[7]!!,
-                sunrise = dataToExpose[8]!!,
-                sunset = dataToExpose[9]!!,
-                lastUpdateTime = dataToExpose[10]!!,
-                weatherIcon = dataToExpose[11]!!
+                city = dataToExpose[0] ?: "--",
+                currentTemperature = dataToExpose[1] ?: "--",
+                feelsLikeTemperature = dataToExpose[2] ?: "--",
+                minTemperature = dataToExpose[3] ?: "--",
+                maxTemperature = dataToExpose[4] ?: "--",
+                visibility = dataToExpose[5] ?: "--",
+                humidity = dataToExpose[6] ?: "--",
+                wind = dataToExpose[7] ?: "--",
+                sunrise = dataToExpose[8] ?: "--",
+                sunset = dataToExpose[9] ?: "--",
+                lastUpdateTime = dataToExpose[10] ?: "--",
+                weatherIcon = dataToExpose[11] ?: "--"
             )
         }
         _mainUiState.update { currentState -> currentState.copy(isInProcess = false) }
