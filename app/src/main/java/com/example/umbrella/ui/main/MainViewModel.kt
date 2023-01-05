@@ -153,10 +153,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _mainUiState.update { currentState -> currentState.copy(isInProcess = false) }
     }
 
-    fun searchActivated() {
-        _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
-    }
-
     fun checkConnection() {
         viewModelScope.launch {
             val currentNetwork = connectivityManager?.activeNetwork
@@ -166,6 +162,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _mainUiState.update { currentState -> currentState.copy(hasConnection = true) }
             }
         }
+    }
+
+    fun searchActivated() {
+        _mainUiState.update { currentState -> currentState.copy(isSearchActive = !mainUiState.value.isSearchActive) }
+    }
+
+    fun refreshActivated() {
+        _mainUiState.update { currentState -> currentState.copy(isRefreshing = !mainUiState.value.isRefreshing) }
     }
 
     companion object {

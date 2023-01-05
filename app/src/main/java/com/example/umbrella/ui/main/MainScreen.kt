@@ -9,8 +9,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -24,7 +29,11 @@ import com.example.umbrella.ui.main.components.AirConditionInfo
 import com.example.umbrella.ui.main.components.SunInfo
 import com.example.umbrella.ui.main.components.WeatherInfo
 import com.example.umbrella.ui.main.model.MainUiState
+import com.example.umbrella.ui.theme.Indigo900
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
@@ -33,6 +42,16 @@ fun MainScreen() {
     val uiDataState by viewModel.uiDataState.collectAsState()
     val modifier: Modifier = Modifier
     val scaffoldState: ScaffoldState = rememberScaffoldState()
+
+    val refreshScope = rememberCoroutineScope()
+    fun refresh() = refreshScope.launch {
+        viewModel.refreshActivated()
+        delay(1500)
+        viewModel.callApiForResult(uiDataState.city, null, null)
+        viewModel.refreshActivated()
+    }
+
+    val pullRefreshState = rememberPullRefreshState(mainUiState.isRefreshing, ::refresh)
 
     // TO FORCE Show search bar if user landed for the first time!
     if (!mainUiState.hasSharedPref && !mainUiState.isSearchActive) {
@@ -48,15 +67,15 @@ fun MainScreen() {
     }
 
     Scaffold(scaffoldState = scaffoldState) {
-        Column {
-            if (mainUiState.isSearchActive) {
-                SearchField(modifier, viewModel, mainUiState)
-            }
+        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
             Column(
                 modifier = modifier
-                    .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
             ) {
+                if (mainUiState.isSearchActive) {
+                    SearchField(modifier, viewModel, mainUiState)
+                }
                 Spacer(modifier.size(16.dp))
                 Card(
                     shape = RoundedCornerShape(16.dp),
@@ -110,6 +129,13 @@ fun MainScreen() {
                 }
                 Spacer(modifier.size(16.dp))
             }
+            PullRefreshIndicator(
+                mainUiState.isRefreshing,
+                pullRefreshState,
+                Modifier.align(TopCenter),
+                backgroundColor = Color.White,
+                contentColor = Indigo900
+            )
         }
     }
 }

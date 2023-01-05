@@ -5,5 +5,6 @@ data class MainUiState(
     val isSearchFailed: Int = 0, // 0:No, 1:Yes(Typo!), 2:Yes(No Connection!), 3:Yes(Unexpected!)
     val hasSharedPref: Boolean = false,
     val isInProcess: Boolean = false,
-    val hasConnection: Boolean = true
+    val hasConnection: Boolean = true,
+    val isRefreshing: Boolean = false
 )
