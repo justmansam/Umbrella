@@ -32,8 +32,8 @@ class MainViewModelTest {
 
         delay(3000) // To let ui state updated
 
-        val currentMainUiState = viewModel.mainUiState.value
+        val currentUiDataState = viewModel.uiDataState.value
         // Assert that showApiCallResult() method updates city correctly.
-        assertEquals("Stockholm", currentMainUiState.city)
+        assertEquals("Stockholm", currentUiDataState.city)
     }
 }

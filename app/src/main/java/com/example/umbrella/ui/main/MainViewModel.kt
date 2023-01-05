@@ -9,6 +9,7 @@ import com.example.umbrella.data.remote.api.RetrofitInstance.api
 import com.example.umbrella.data.remote.api.WeatherRepoImpl
 import com.example.umbrella.data.remote.api.model.WeatherData
 import com.example.umbrella.fusedLocationClient
+import com.example.umbrella.sharedPref
 import com.example.umbrella.sharedPrefImpl
 import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import com.example.umbrella.ui.main.model.MainUiState
@@ -33,7 +34,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     val uiDataState: StateFlow<UiDataState> = _uiDataState.asStateFlow()
 
     init {
-        sharedPrefImpl = SharedPreferencesImpl(com.example.umbrella.sharedPref)
+        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
         lookForSharedPreferences()
     }
 
