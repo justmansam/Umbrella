@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.umbrella.R
-import com.example.umbrella.ui.common.mapToDrawableResource
+import com.example.umbrella.common.mapToDrawableResource
 import com.example.umbrella.ui.main.model.UiDataState
 
 @Composable

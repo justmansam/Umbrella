@@ -4,9 +4,11 @@ import com.example.umbrella.data.remote.api.model.WeatherData
 import retrofit2.Response
 
 interface IWeatherRepo {
-    suspend fun getWeatherData(
+    suspend fun getRemoteWeatherData(
         city: String? = null,
         latitude: String? = null,
         longitude: String? = null
-    ): Response<WeatherData>
+    ): Array<String?>
+
+    suspend fun convertResponseAndUpdateSharedPref(response: Response<WeatherData>): Array<String?>
 }

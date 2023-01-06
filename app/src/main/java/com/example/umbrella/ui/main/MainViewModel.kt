@@ -4,14 +4,11 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.connectivityManager
-import com.example.umbrella.data.local.pref.SharedPreferencesImpl
+import com.example.umbrella.data.common.RepositoryImpl
+import com.example.umbrella.data.common.RepositoryImpl.Companion.SHARED_PREF_KEY_ARRAY
 import com.example.umbrella.data.remote.api.RetrofitInstance.api
-import com.example.umbrella.data.remote.api.WeatherRepoImpl
-import com.example.umbrella.data.remote.api.model.WeatherData
 import com.example.umbrella.fusedLocationClient
 import com.example.umbrella.sharedPref
-import com.example.umbrella.sharedPrefImpl
-import com.example.umbrella.ui.common.toUTCformatedLocalTime
 import com.example.umbrella.ui.main.model.MainUiState
 import com.example.umbrella.ui.main.model.UiDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,26 +18,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    private val repository = WeatherRepoImpl(api)
+    private val repository = RepositoryImpl(api, sharedPref)
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
     private val _uiDataState = MutableStateFlow(UiDataState())
     val uiDataState: StateFlow<UiDataState> = _uiDataState.asStateFlow()
 
     init {
-        sharedPrefImpl = SharedPreferencesImpl(sharedPref)
         lookForSharedPreferences()
     }
 
     private fun lookForSharedPreferences() {
         viewModelScope.launch {
-            val sharedPrefArray = sharedPrefImpl.getValue(SHARED_PREF_KEY_ARRAY)
+            val sharedPrefArray = repository.getSharedPref(SHARED_PREF_KEY_ARRAY)
             if (sharedPrefArray[0] != null && sharedPrefArray[1] != null && sharedPrefArray[11] != null) {
                 updateUiDataState(sharedPrefArray)
                 _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
@@ -67,7 +62,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _mainUiState.update { currentState -> currentState.copy(isInProcess = true) }
             val response = try {
-                repository.getWeatherData(city, latitude, longitude)
+                repository.getRemoteWeatherData(city, latitude, longitude)
             } catch (e: IOException) {
                 _mainUiState.update { currentState ->
                     currentState.copy(
@@ -87,48 +82,35 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 }
                 return@launch
             }
-            if (response.isSuccessful) {
-                updateSharedPreferences(response)
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        isSearchActive = false,
-                        isSearchFailed = 0
-                    )
-                }
-            } else {
-                _mainUiState.update { currentState ->
-                    currentState.copy(
-                        isSearchFailed = 1,
-                        isSearchActive = true,
-                        isInProcess = false
-                    )
-                }
-            }
+            updateMainUiState(response)
         }
     }
 
-    private suspend fun updateSharedPreferences(response: Response<WeatherData>) {
-        viewModelScope.launch {
-            try {
-                val apiResponseArray = arrayOf(
-                    response.body()!!.name,
-                    response.body()!!.main.temp.toInt().toString(),
-                    response.body()!!.main.feels_like.toInt().toString(),
-                    response.body()!!.main.temp_min.toInt().toString(),
-                    response.body()!!.main.temp_max.toInt().toString(),
-                    (response.body()!!.visibility / 100).toString(),
-                    response.body()!!.main.humidity.toString(),
-                    response.body()!!.wind.speed.toInt().toString(),
-                    (response.body()!!.sys.sunrise).toUTCformatedLocalTime(response, true),
-                    (response.body()!!.sys.sunset).toUTCformatedLocalTime(response, true),
-                    (response.body()!!.dt).toUTCformatedLocalTime(response, false),
-                    response.body()!!.weather[0].icon
+    private fun updateMainUiState(response: Array<String?>) {
+        if (response.isNotEmpty() && !response[0].equals("nullPointerException")) {
+            updateUiDataState(response)
+            _mainUiState.update { currentState ->
+                currentState.copy(
+                    hasSharedPref = true,
+                    isSearchActive = false,
+                    isSearchFailed = 0
                 )
-                sharedPrefImpl.setValue(SHARED_PREF_KEY_ARRAY, apiResponseArray)
-                _mainUiState.update { currentState -> currentState.copy(hasSharedPref = true) }
-                lookForSharedPreferences()
-            } catch (e: java.lang.NullPointerException) {
-                _mainUiState.update { currentState -> currentState.copy(isSearchFailed = 3) }
+            }
+        } else if (response.isEmpty()) {
+            _mainUiState.update { currentState ->
+                currentState.copy(
+                    isSearchFailed = 1,
+                    isSearchActive = true,
+                    isInProcess = false
+                )
+            }
+        } else { // If has nullPointerException
+            _mainUiState.update { currentState ->
+                currentState.copy(
+                    isSearchFailed = 3,
+                    isSearchActive = true,
+                    isInProcess = false
+                )
             }
         }
     }
@@ -170,22 +152,5 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun refreshActivated() {
         _mainUiState.update { currentState -> currentState.copy(isRefreshing = !mainUiState.value.isRefreshing) }
-    }
-
-    companion object {
-        private val SHARED_PREF_KEY_ARRAY = arrayOf(
-            "city",
-            "currentTemp",
-            "feelsLikeTemp",
-            "minTemp",
-            "maxTemp",
-            "visibility",
-            "humidity",
-            "wind",
-            "sunrise",
-            "sunset",
-            "lastUpdateTime",
-            "weatherIcon"
-        )
     }
 }

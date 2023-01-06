@@ -19,7 +19,6 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.umbrella.data.local.pref.SharedPreferencesImpl
 import com.example.umbrella.ui.main.MainScreen
 import com.example.umbrella.ui.main.MainViewModel
 import com.example.umbrella.ui.theme.UmbrellaTheme
@@ -28,7 +27,6 @@ import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 
 lateinit var sharedPref: SharedPreferences
-lateinit var sharedPrefImpl: SharedPreferencesImpl
 lateinit var fusedLocationClient: FusedLocationProviderClient
 lateinit var permissionToAsk: ActivityResultLauncher<Array<String>>
 var connectivityManager: ConnectivityManager? = null

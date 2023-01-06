@@ -1,4 +1,4 @@
-package com.example.umbrella.ui.common
+package com.example.umbrella.common
 
 import androidx.annotation.DrawableRes
 import com.example.umbrella.R
