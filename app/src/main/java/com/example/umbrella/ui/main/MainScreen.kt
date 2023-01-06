@@ -68,66 +68,71 @@ fun MainScreen() {
 
     Scaffold(scaffoldState = scaffoldState) {
         Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-            ) {
+            Column {
                 if (mainUiState.isSearchActive) {
                     SearchField(modifier, viewModel, mainUiState)
                 }
-                Spacer(modifier.size(16.dp))
-                Card(
-                    shape = RoundedCornerShape(16.dp),
+                Column(
                     modifier = modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            viewModel.searchActivated()
-                            viewModel.checkConnection()
-                        },
-                    backgroundColor = MaterialTheme.colors.surface
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
                 ) {
-                    if (mainUiState.isInProcess) ProcessField(modifier) else WeatherInfo(
-                        modifier,
-                        uiDataState
-                    )
-                }
-                Spacer(modifier.size(16.dp))
-                Card(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colors.surface
-                ) {
-                    if (mainUiState.isInProcess) ProcessField(modifier) else AirConditionInfo(
-                        modifier,
-                        uiDataState
-                    )
-                }
-                Spacer(modifier.size(16.dp))
-                Card(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colors.surface
-                ) {
-                    if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(
-                        modifier,
-                        uiDataState
-                    )
-                }
-                Spacer(modifier.size(16.dp))
-                if (!mainUiState.isInProcess) {
-                    Text(
+                    Spacer(modifier.size(16.dp))
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.searchActivated()
+                                viewModel.checkConnection()
+                            },
+                        backgroundColor = MaterialTheme.colors.surface
+                    ) {
+                        if (mainUiState.isInProcess) ProcessField(modifier) else WeatherInfo(
+                            modifier,
+                            uiDataState
+                        )
+                    }
+                    Spacer(modifier.size(16.dp))
+                    Card(
                         modifier = modifier
                             .fillMaxWidth(),
-                        text = stringResource(id = R.string.last_update)
-                                + " " + uiDataState.lastUpdateTime
-                                + " " + stringResource(id = R.string.local_time),
-                        fontSize = 10.sp
-                    )
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                        backgroundColor = MaterialTheme.colors.surface
+                    ) {
+                        if (mainUiState.isInProcess) ProcessField(modifier) else AirConditionInfo(
+                            modifier,
+                            uiDataState
+                        )
+                    }
+                    Spacer(modifier.size(16.dp))
+                    Card(
+                        modifier = modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                        backgroundColor = MaterialTheme.colors.surface
+                    ) {
+                        if (mainUiState.isInProcess) ProcessField(modifier) else SunInfo(
+                            modifier,
+                            uiDataState
+                        )
+                    }
+                    Spacer(modifier.size(16.dp))
+                    if (!mainUiState.isInProcess) {
+                        Text(
+                            modifier = modifier
+                                .fillMaxWidth(),
+                            text = stringResource(id = R.string.last_update)
+                                    + " " + uiDataState.lastUpdateTime
+                                    + " " + stringResource(id = R.string.local_time),
+                            fontSize = 10.sp
+                        )
+                    }
+                    Spacer(modifier.size(16.dp))
                 }
-                Spacer(modifier.size(16.dp))
             }
             PullRefreshIndicator(
                 mainUiState.isRefreshing,
