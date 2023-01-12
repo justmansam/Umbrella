@@ -50,7 +50,7 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun convertResponseAndUpdateSharedPref(response: Response<WeatherData>): Array<String?> {
+    private suspend fun convertResponseAndUpdateSharedPref(response: Response<WeatherData>): Array<String?> {
         val apiResponseArray: Array<String?> = arrayOf(
             response.body()!!.name,
             response.body()!!.main.temp.toInt().toString(),

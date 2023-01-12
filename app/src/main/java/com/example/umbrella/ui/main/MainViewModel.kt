@@ -1,6 +1,7 @@
 package com.example.umbrella.ui.main
 
 import android.location.Location
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.umbrella.connectivityManager
@@ -43,8 +44,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    @RequiresPermission("android.permission.ACCESS_COARSE_LOCATION")
     fun getLocation() {
-        // Ignore warning!! Permission already checked!!
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
