@@ -46,7 +46,7 @@ fun MainScreen() {
     val refreshScope = rememberCoroutineScope()
     fun refresh() = refreshScope.launch {
         viewModel.refreshActivated()
-        delay(1500)
+        delay(1000)
         viewModel.callApiForResult(uiDataState.city, null, null)
         viewModel.refreshActivated()
     }

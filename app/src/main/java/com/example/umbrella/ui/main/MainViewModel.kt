@@ -23,8 +23,9 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
-    private val repository = RepositoryImpl(api, sharedPref)
+class MainViewModel @Inject constructor(
+    private val repository: RepositoryImpl = RepositoryImpl(api, sharedPref)
+) : ViewModel() {
     private val _mainUiState = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
     private val _uiDataState = MutableStateFlow(UiDataState())
