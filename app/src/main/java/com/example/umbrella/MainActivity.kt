@@ -1,3 +1,5 @@
+//BİSMİLLAH!
+
 package com.example.umbrella
 
 import android.Manifest
